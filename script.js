@@ -2,7 +2,6 @@ let balance = 0;
 let spinCount = 1;
 let autoSpinCost = 10; // Initial cost for auto-spin upgrade
 let autoSpinEnabled = false; // Track if auto-spin is enabled
-let autoSpinMachine = null; // Track the selected machine for auto-spin
 
 const balanceDisplay = document.getElementById('balance');
 const spinButtonContainer = document.getElementById('spinButtonContainer');
@@ -71,6 +70,11 @@ function createSpinButton(spinNumber) {
   machineSelect.appendChild(option);
 }
 
+// Update the text of the auto-spin button with the current price
+function updateAutoSpinButton() {
+  buyAutoSpinButton.textContent = `Buy Auto-Spin for $${autoSpinCost}`;
+}
+
 // Buy a new slot machine (costs $20)
 buySlotButton.addEventListener('click', () => {
   if (balance >= 20) {
@@ -93,6 +97,7 @@ buyAutoSpinButton.addEventListener('click', () => {
     messageDisplay.textContent = `Auto-spin enabled for Machine ${machineSelect.value}! Next upgrade costs $${autoSpinCost}.`;
     updateBalanceDisplay();
     startAutoSpin(); // Start auto-spin for the selected machine
+    updateAutoSpinButton(); // Update the auto-spin button text
   } else {
     messageDisplay.textContent = "Not enough money to buy auto-spin!";
   }
@@ -132,4 +137,4 @@ function updateBalanceDisplay() {
 // Initialize the first spin button and balance display
 createSpinButton(spinCount);
 updateBalanceDisplay();
-
+updateAutoSpinButton(); // Call this to set the initial button text

@@ -101,13 +101,15 @@ buyAutoSpinButton.addEventListener('click', () => {
 // Start auto-spin feature for selected machine
 function startAutoSpin() {
   const selectedMachine = machineSelect.value; // Get the selected machine
+  const resultDisplay = document.getElementById(`result${selectedMachine}`); // Get the result display for the selected machine
+  
   const autoSpinInterval = setInterval(() => {
     if (autoSpinEnabled) {
       const result = getRandomOutcome();
       let winnings = 0;
 
       if (result.name === 'Lose') {
-        messageDisplay.textContent = `Machine ${selectedMachine}: You lost on auto-spin!`;
+        resultDisplay.textContent = `Machine ${selectedMachine}: You lost on auto-spin!`;
       } else {
         if (balance === 0) {
           winnings = result.fixed;
@@ -115,7 +117,7 @@ function startAutoSpin() {
           winnings = (balance * result.percent) / 100;
         }
         balance += winnings;
-        messageDisplay.textContent = `Auto-spin: Machine ${selectedMachine}: You won $${winnings.toFixed(2)}!`;
+        resultDisplay.textContent = `Auto-spin: Machine ${selectedMachine}: ${result.name} - You won $${winnings.toFixed(2)}!`;
       }
       updateBalanceDisplay();
     }
@@ -130,3 +132,4 @@ function updateBalanceDisplay() {
 // Initialize the first spin button and balance display
 createSpinButton(spinCount);
 updateBalanceDisplay();
+

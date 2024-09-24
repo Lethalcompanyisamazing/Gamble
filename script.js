@@ -16,8 +16,14 @@ let autoSpinCost = 10;
 let autoSpinInterval = null;
 let luckMultiplier = 1.0;
 
-// Slot symbols
-const reelSymbols = ['🍒', '🍇', '7️⃣', '🍋', '🔔'];
+// Slot symbols and payouts
+const reelSymbols = [
+  { symbol: '🍒', payout: 10 },
+  { symbol: '🍇', payout: 20 },
+  { symbol: '7️⃣', payout: 100 },
+  { symbol: '🍋', payout: 5 },
+  { symbol: '🔔', payout: 50 }
+];
 
 // Play background music
 backgroundMusic.play();
@@ -35,7 +41,7 @@ function spinReel(reelElement) {
     let spins = 20; // Number of spins before stopping
     let spinInterval = setInterval(() => {
       let randomSymbol = getRandomOutcome();
-      reelElement.textContent = randomSymbol;
+      reelElement.textContent = randomSymbol.symbol;
     }, 100);
 
     setTimeout(() => {
@@ -58,10 +64,15 @@ spinMachineButton.addEventListener('click', async () => {
 
   // Check if the user won (all symbols match)
   if (result1 === result2 && result2 === result3) {
-    alert("Jackpot! You hit " + result1);
+    const winningSymbol = reelSymbols.find(s => s.symbol === result1);
+    const winnings = winningSymbol.payout * luckMultiplier;
+    balance += winnings;
+    alert(`Jackpot! You hit ${winningSymbol.symbol} and won $${winnings}!`);
   } else {
     alert("Try again!");
   }
+  
+  updateBalanceDisplay();
 });
 
 // Buy a new slot machine (costs $20)

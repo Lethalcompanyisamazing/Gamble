@@ -1,7 +1,5 @@
 let balance = 0;
 let spinCount = 1;
-let autoSpinCost = 10; // Initial cost for auto-spin upgrade
-let autoSpinEnabled = false; // Track if auto-spin is enabled
 
 const balanceDisplay = document.getElementById('balance');
 const spinButtonContainer = document.getElementById('spinButtonContainer');
@@ -9,26 +7,33 @@ const resultContainer = document.getElementById('resultContainer');
 const messageDisplay = document.getElementById('messageDisplay');
 const buySlotButton = document.getElementById('buySlotButton');
 const buyAutoSpinButton = document.getElementById('buyAutoSpinButton');
-const machineSelect = document.getElementById('machineSelect'); // Machine selection dropdown
+const buyLuckUpgradeButton = document.getElementById('buyLuckUpgradeButton');
+const machineSelect = document.getElementById('machineSelect');
 
-// Slot machine outcomes with updated win percentages
-const outcomes = [
-  { name: 'Lose', percent: 0, fixed: 0, chance: 70 },
-  { name: 'Grape', percent: 10, fixed: 10, chance: 20 },
-  { name: 'Cherry', percent: 20, fixed: 50, chance: 9 },
-  { name: '777', percent: 50, fixed: 100, chance: 1 }
+let autoSpinCost = 10;
+let autoSpinInterval = null;
+
+// Slot machine outcomes with updated win percentages (initial bad luck)
+let outcomes = [
+  { name: 'Lose', percent: 0, fixed: 0, chance: 85 }, // 85% chance of losing initially
+  { name: 'Grape', percent: 10, fixed: 10, chance: 10 }, // 10% chance of winning Grape
+  { name: 'Cherry', percent: 20, fixed: 50, chance: 4 }, // 4% chance of winning Cherry
+  { name: '777', percent: 50, fixed: 100, chance: 1 } // 1% chance of winning 777
 ];
 
-// Function to pick a random outcome based on chance
+// Luck multiplier, starts at 1 and increases with upgrades
+let luckMultiplier = 1.0;
+
+// Function to pick a random outcome based on luck
 function getRandomOutcome() {
-  const totalChance = outcomes.reduce((sum, outcome) => sum + outcome.chance, 0);
+  const totalChance = outcomes.reduce((sum, outcome) => sum + outcome.chance * luckMultiplier, 0);
   let random = Math.random() * totalChance;
   
   for (let outcome of outcomes) {
-    if (random < outcome.chance) {
+    if (random < outcome.chance * luckMultiplier) {
       return outcome;
     }
-    random -= outcome.chance;
+    random -= outcome.chance * luckMultiplier;
   }
 }
 
@@ -36,43 +41,41 @@ function getRandomOutcome() {
 function createSpinButton(spinNumber) {
   const spinButton = document.createElement('button');
   spinButton.textContent = `Spin Machine ${spinNumber}`;
-  spinButton.style.margin = '10px';
+  spinButton.style.margin = '10px'; // Add spacing between buttons
   
   const resultDisplay = document.createElement('p');
   resultDisplay.id = `result${spinNumber}`;
   resultDisplay.textContent = `Result for Machine ${spinNumber}: -`;
   
-  spinButton.addEventListener('click', () => {
-    const result = getRandomOutcome();
-    let winnings = 0;
+  spinButton.addEventListener('click', () => spinMachine(spinNumber, resultDisplay));
 
-    if (result.name === 'Lose') {
-      resultDisplay.textContent = `Machine ${spinNumber}: You lost! Try again.`;
-    } else {
-      if (balance === 0) {
-        winnings = result.fixed;
-      } else {
-        winnings = (balance * result.percent) / 100;
-      }
-      balance += winnings;
-      resultDisplay.textContent = `Machine ${spinNumber}: ${result.name} - You won $${winnings.toFixed(2)}!`;
-    }
-    updateBalanceDisplay();
-  });
-  
+  // Add new machine option to the select dropdown
+  const option = document.createElement('option');
+  option.value = spinNumber;
+  option.textContent = `Machine ${spinNumber}`;
+  machineSelect.appendChild(option);
+
   spinButtonContainer.appendChild(spinButton);
   resultContainer.appendChild(resultDisplay);
-  
-  // Add machine to the dropdown
-  const option = document.createElement('option');
-  option.value = spinNumber; // The value corresponds to the machine number
-  option.textContent = `Machine ${spinNumber}`; // Text displayed in the dropdown
-  machineSelect.appendChild(option);
 }
 
-// Update the text of the auto-spin button with the current price
-function updateAutoSpinButton() {
-  buyAutoSpinButton.textContent = `Buy Auto-Spin for $${autoSpinCost}`;
+// Function to spin the machine
+function spinMachine(spinNumber, resultDisplay) {
+  const result = getRandomOutcome();
+  let winnings = 0;
+
+  if (result.name === 'Lose') {
+    resultDisplay.textContent = `Machine ${spinNumber}: You lost! Try again.`;
+  } else {
+    if (balance === 0) {
+      winnings = result.fixed;
+    } else {
+      winnings = (balance * result.percent) / 100;
+    }
+    balance += winnings;
+    resultDisplay.textContent = `Machine ${spinNumber}: ${result.name} - You won $${winnings.toFixed(2)}!`;
+  }
+  updateBalanceDisplay();
 }
 
 // Buy a new slot machine (costs $20)
@@ -88,53 +91,51 @@ buySlotButton.addEventListener('click', () => {
   }
 });
 
-// Buy auto-spin upgrade
+// Buy auto-spin upgrade (cost increases each time)
 buyAutoSpinButton.addEventListener('click', () => {
   if (balance >= autoSpinCost) {
     balance -= autoSpinCost;
-    autoSpinEnabled = true;
-    autoSpinCost += 5; // Increase cost for next auto-spin upgrade
-    messageDisplay.textContent = `Auto-spin enabled for Machine ${machineSelect.value}! Next upgrade costs $${autoSpinCost}.`;
+    autoSpinCost += 10; // Increase cost for next purchase
+    messageDisplay.textContent = `Auto-spin purchased for $${autoSpinCost - 10}. New cost: $${autoSpinCost}`;
     updateBalanceDisplay();
-    startAutoSpin(); // Start auto-spin for the selected machine
-    updateAutoSpinButton(); // Update the auto-spin button text
+    updateButtonTexts();
+
+    // Clear previous interval if exists
+    if (autoSpinInterval) clearInterval(autoSpinInterval);
+
+    // Set auto-spin for selected machine
+    const selectedMachine = machineSelect.value;
+    const resultDisplay = document.getElementById(`result${selectedMachine}`);
+    
+    autoSpinInterval = setInterval(() => spinMachine(selectedMachine, resultDisplay), 2000);
   } else {
-    messageDisplay.textContent = "Not enough money to buy auto-spin!";
+    messageDisplay.textContent = "Not enough money for Auto-Spin!";
   }
 });
 
-// Start auto-spin feature for selected machine
-function startAutoSpin() {
-  const selectedMachine = machineSelect.value; // Get the selected machine
-  const resultDisplay = document.getElementById(`result${selectedMachine}`); // Get the result display for the selected machine
-  
-  const autoSpinInterval = setInterval(() => {
-    if (autoSpinEnabled) {
-      const result = getRandomOutcome();
-      let winnings = 0;
-
-      if (result.name === 'Lose') {
-        resultDisplay.textContent = `Machine ${selectedMachine}: You lost on auto-spin!`;
-      } else {
-        if (balance === 0) {
-          winnings = result.fixed;
-        } else {
-          winnings = (balance * result.percent) / 100;
-        }
-        balance += winnings;
-        resultDisplay.textContent = `Auto-spin: Machine ${selectedMachine}: ${result.name} - You won $${winnings.toFixed(2)}!`;
-      }
-      updateBalanceDisplay();
-    }
-  }, 3000); // Spins every 3 seconds (adjust as needed)
-}
+// Buy luck upgrade to improve chances (cost $50)
+buyLuckUpgradeButton.addEventListener('click', () => {
+  if (balance >= 50) {
+    balance -= 50;
+    luckMultiplier += 0.1; // Each upgrade increases luck by 10%
+    messageDisplay.textContent = "Your luck has increased!";
+    updateBalanceDisplay();
+  } else {
+    messageDisplay.textContent = "Not enough money to get luckier!";
+  }
+});
 
 // Update balance display
 function updateBalanceDisplay() {
   balanceDisplay.textContent = balance.toFixed(2);
 }
 
+// Update button texts with dynamic prices
+function updateButtonTexts() {
+  buyAutoSpinButton.textContent = `Buy Auto-Spin ($${autoSpinCost})`;
+}
+
 // Initialize the first spin button and balance display
 createSpinButton(spinCount);
 updateBalanceDisplay();
-updateAutoSpinButton(); // Call this to set the initial button text
+updateButtonTexts();

@@ -10,75 +10,59 @@ const buyAutoSpinButton = document.getElementById('buyAutoSpinButton');
 const buyLuckUpgradeButton = document.getElementById('buyLuckUpgradeButton');
 const machineSelect = document.getElementById('machineSelect');
 const backgroundMusic = document.getElementById('backgroundMusic');
+const spinMachineButton = document.getElementById('spinMachineButton');
 
 let autoSpinCost = 10;
 let autoSpinInterval = null;
 let luckMultiplier = 1.0;
 
-// Slot machine outcomes with updated win percentages
-let outcomes = [
-  { name: 'Lose', percent: 0, fixed: 0, chance: 85 }, // High chance of losing initially
-  { name: 'Grape', percent: 10, fixed: 10, chance: 10 },
-  { name: 'Cherry', percent: 20, fixed: 50, chance: 4 },
-  { name: '777', percent: 50, fixed: 100, chance: 1 }
-];
+// Slot symbols
+const reelSymbols = ['🍒', '🍇', '7️⃣', '🍋', '🔔'];
 
-// Play background music when the page loads
+// Play background music
 backgroundMusic.play();
 
 // Function to pick a random outcome based on luck
 function getRandomOutcome() {
-  const totalChance = outcomes.reduce((sum, outcome) => sum + outcome.chance * luckMultiplier, 0);
-  let random = Math.random() * totalChance;
-
-  for (let outcome of outcomes) {
-    if (random < outcome.chance * luckMultiplier) {
-      return outcome;
-    }
-    random -= outcome.chance * luckMultiplier;
-  }
+  const totalChance = reelSymbols.length;
+  const randomIndex = Math.floor(Math.random() * totalChance);
+  return reelSymbols[randomIndex];
 }
 
-// Function to create a spin button and result display for each slot machine
-function createSpinButton(spinNumber) {
-  const spinButton = document.createElement('button');
-  spinButton.textContent = `Spin Machine ${spinNumber}`;
-  spinButton.style.margin = '10px';
+// Function to spin a reel and stop at a random symbol
+function spinReel(reelElement) {
+  return new Promise((resolve) => {
+    let spins = 20; // Number of spins before stopping
+    let spinInterval = setInterval(() => {
+      let randomSymbol = getRandomOutcome();
+      reelElement.textContent = randomSymbol;
+    }, 100);
 
-  const resultDisplay = document.createElement('p');
-  resultDisplay.id = `result${spinNumber}`;
-  resultDisplay.textContent = `Result for Machine ${spinNumber}: -`;
-
-  spinButton.addEventListener('click', () => spinMachine(spinNumber, resultDisplay));
-
-  // Add new machine option to the select dropdown
-  const option = document.createElement('option');
-  option.value = spinNumber;
-  option.textContent = `Machine ${spinNumber}`;
-  machineSelect.appendChild(option);
-
-  spinButtonContainer.appendChild(spinButton);
-  resultContainer.appendChild(resultDisplay);
+    setTimeout(() => {
+      clearInterval(spinInterval);
+      resolve(reelElement.textContent); // Return the final symbol
+    }, spins * 100); // Stop after a certain number of spins
+  });
 }
 
-// Function to spin the machine
-function spinMachine(spinNumber, resultDisplay) {
-  const result = getRandomOutcome();
-  let winnings = 0;
+// Spin the machine when the spin button is clicked
+spinMachineButton.addEventListener('click', async () => {
+  const reel1 = document.getElementById('reel1');
+  const reel2 = document.getElementById('reel2');
+  const reel3 = document.getElementById('reel3');
 
-  if (result.name === 'Lose') {
-    resultDisplay.textContent = `Machine ${spinNumber}: You lost! Try again.`;
+  // Spin each reel and await their results
+  const result1 = await spinReel(reel1);
+  const result2 = await spinReel(reel2);
+  const result3 = await spinReel(reel3);
+
+  // Check if the user won (all symbols match)
+  if (result1 === result2 && result2 === result3) {
+    alert("Jackpot! You hit " + result1);
   } else {
-    if (balance === 0) {
-      winnings = result.fixed;
-    } else {
-      winnings = (balance * result.percent) / 100;
-    }
-    balance += winnings;
-    resultDisplay.textContent = `Machine ${spinNumber}: ${result.name} - You won $${winnings.toFixed(2)}!`;
+    alert("Try again!");
   }
-  updateBalanceDisplay();
-}
+});
 
 // Buy a new slot machine (costs $20)
 buySlotButton.addEventListener('click', () => {
@@ -138,6 +122,5 @@ function updateButtonTexts() {
 }
 
 // Initialize the first spin button and balance display
-createSpinButton(spinCount);
 updateBalanceDisplay();
 updateButtonTexts();

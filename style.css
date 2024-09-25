@@ -1,13 +1,17 @@
-#slotMachineContainer {
+#slotMachinesContainer {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  gap: 20px;
   margin-top: 20px;
 }
 
 .slotMachine {
   display: flex;
-  margin: 10px;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 150px;
 }
 
 .reel {
@@ -17,19 +21,28 @@
   width: 60px;
   height: 60px;
   text-align: center;
-  margin: 0 5px;
-  border-radius: 10px;
+  margin: 5px;
+  border-radius: 5px;
   background-color: lightgray;
+}
+
+#spinMachineButton {
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
 }
 
 button {
   margin: 10px;
 }
 
-#spinMachineButton {
+#upgradeSection {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+label {
   display: block;
-  margin: 20px auto;
-  padding: 10px 20px;
-  font-size: 18px;
-  cursor: pointer;
+  margin-top: 10px;
 }

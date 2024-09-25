@@ -9,32 +9,15 @@
 <body>
   <div id="app">
     <h1>Slot Machine Game</h1>
-
     <p>Balance: $<span id="balance">0</span></p>
-
-    <!-- Slot Machine Display -->
-    <div id="slotMachinesContainer"></div> <!-- Container for multiple slot machines -->
-
-    <!-- Upgrade and Auto-Spin Section -->
-    <div id="upgradeSection">
-      <button id="buySlotButton">Create Another Slot Machine ($20)</button>
-      <button id="buyAutoSpinButton">Buy Auto-Spin ($10)</button>
-      <button id="buyLuckUpgradeButton">Get Luckier ($50)</button>
-    </div>
-
-    <!-- Auto-Spin Select -->
-    <label for="machineSelect">Auto-Spin Machine:</label>
-    <select id="machineSelect"></select> <!-- Dynamically filled with slot machine options -->
-
-    <p id="messageDisplay"></p> <!-- Display game messages here -->
-
-    <!-- Background Music -->
-    <audio id="backgroundMusic" loop>
-      <source src="background-music.mp3" type="audio/mpeg">
-      Your browser does not support the audio element.
-    </audio>
+    <div id="slotMachinesContainer"></div>
+    <button id="buySlotButton">Buy Slot Machine ($20)</button>
+    <button id="buyAutoSpinButton">Buy Auto-Spin ($10)</button>
+    <button id="buyLuckUpgradeButton">Buy Luck Upgrade ($50)</button>
+    <select id="machineSelect"></select>
+    <p id="messageDisplay"></p>
+    <audio id="backgroundMusic" src="background-music.mp3" loop></audio>
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>

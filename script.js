@@ -1,137 +1,125 @@
+
 let balance = 0;
 let spinCount = 1;
+let luckFactor = 1;
 
 const balanceDisplay = document.getElementById('balance');
-const slotMachinesContainer = document.getElementById('slotMachinesContainer');
+const spinButtonContainer = document.getElementById('spinButtonContainer');
+const resultContainer = document.getElementById('resultContainer');
+const emojiContainer = document.getElementById('emojiContainer');
 const messageDisplay = document.getElementById('messageDisplay');
 const buySlotButton = document.getElementById('buySlotButton');
-const buyAutoSpinButton = document.getElementById('buyAutoSpinButton');
-const buyLuckUpgradeButton = document.getElementById('buyLuckUpgradeButton');
-const machineSelect = document.getElementById('machineSelect');
-const backgroundMusic = document.getElementById('backgroundMusic');
+const luckUpgradeButton = document.getElementById('luckUpgradeButton');
 
-let autoSpinCost = 10;
-let autoSpinInterval = null;
-let luckMultiplier = 1.0;
-
-const reelSymbols = [
-  { symbol: '🍒', payout: 10 },
-  { symbol: '🍇', payout: 20 },
-  { symbol: '7️⃣', payout: 100 },
-  { symbol: '🍋', payout: 5 },
-  { symbol: '🔔', payout: 50 }
+// Slot machine outcomes with win percentages adjusted by luck factor
+let baseOutcomes = [
+  { name: 'Lose', percent: 0, fixed: 0, chance: 70 }, // 70% chance of losing
+  { name: 'Grape', percent: 10, fixed: 10, chance: 20 }, // 20% chance of winning Grape (now 10%)
+  { name: 'Cherry', percent: 20, fixed: 50, chance: 9 }, // 9% chance of winning Cherry (now 20%)
+  { name: '777', percent: 50, fixed: 100, chance: 1 } // 1% chance of winning 777 (now 50%)
 ];
 
-backgroundMusic.play(); // Play the background music
+// Emoji options: grape 🍇, cherry 🍒, and 7️⃣
+const emojiOptions = ['🍇', '🍒', '7️⃣'];
 
+// Function to pick a random outcome based on chance and luck factor
 function getRandomOutcome() {
-  const totalChance = reelSymbols.length;
-  const randomIndex = Math.floor(Math.random() * totalChance);
-  return reelSymbols[randomIndex];
-}
-
-function generateRandomEmojis(spinNumber) {
-  const reel1 = getRandomOutcome();
-  const reel2 = getRandomOutcome();
-  const reel3 = getRandomOutcome();
-
-  const resultDisplay = document.getElementById(`result_${spinNumber}`);
+  const totalChance = baseOutcomes.reduce((sum, outcome) => sum + (outcome.chance * luckFactor), 0);
+  let random = Math.random() * totalChance;
   
-  resultDisplay.textContent = `${reel1.symbol} | ${reel2.symbol} | ${reel3.symbol}`;
-
-  if (reel1.symbol === reel2.symbol && reel2.symbol === reel3.symbol) {
-    const winnings = reel1.payout * luckMultiplier;
-    balance += winnings;
-    messageDisplay.textContent = `Machine ${spinNumber}: Jackpot! You won $${winnings}!`;
-  } else {
-    messageDisplay.textContent = `Machine ${spinNumber}: Try again!`;
+  for (let outcome of baseOutcomes) {
+    if (random < outcome.chance * luckFactor) {
+      return outcome;
+    }
+    random -= outcome.chance * luckFactor;
   }
-
-  updateBalanceDisplay();
 }
 
-function createSlotMachine(spinNumber) {
-  const slotMachine = document.createElement('div');
-  slotMachine.className = 'slotMachine';
+// Generate random emojis for the reels
+function generateRandomEmojis() {
+  const emoji1 = emojiOptions[Math.floor(Math.random() * emojiOptions.length)];
+  const emoji2 = emojiOptions[Math.floor(Math.random() * emojiOptions.length)];
+  const emoji3 = emojiOptions[Math.floor(Math.random() * emojiOptions.length)];
+  
+  return [emoji1, emoji2, emoji3];
+}
 
-  const resultDisplay = document.createElement('p');
-  resultDisplay.id = `result_${spinNumber}`;
-  resultDisplay.textContent = `Result for Machine ${spinNumber}: -`;
-
+// Create a spin button and result display for each slot machine
+function createSpinButton(spinNumber) {
   const spinButton = document.createElement('button');
   spinButton.textContent = `Spin Machine ${spinNumber}`;
-  spinButton.id = `spinMachineButton_${spinNumber}`;
-
+  spinButton.style.margin = '10px';  // Add spacing between buttons
+  
+  const resultDisplay = document.createElement('p');
+  resultDisplay.id = `result${spinNumber}`;
+  resultDisplay.textContent = `Result for Machine ${spinNumber}: -`;
+  
+  const emojiDisplay = document.createElement('p');
+  emojiDisplay.id = `emojiResult${spinNumber}`;
+  emojiDisplay.textContent = '🍇 🍒 7️⃣';  // Default display of the three emojis
+  
   spinButton.addEventListener('click', () => {
-    generateRandomEmojis(spinNumber);
+    const result = getRandomOutcome();
+    let winnings = 0;
+    const emojis = generateRandomEmojis();
+    emojiDisplay.textContent = `${emojis[0]} ${emojis[1]} ${emojis[2]}`;
+
+    if (result.name === 'Lose') {
+      resultDisplay.textContent = `Machine ${spinNumber}: You lost! Try again.`;
+    } else {
+      if (balance === 0) {
+        winnings = result.fixed;
+      } else {
+        winnings = (balance * result.percent) / 100;
+      }
+      balance += winnings;
+      resultDisplay.textContent = `Machine ${spinNumber}: ${result.name} - You won $${winnings.toFixed(2)}!`;
+    }
+
+    // Check if all three emojis are the same
+    if (emojis[0] === emojis[1] && emojis[1] === emojis[2]) {
+      balance += 50; // Example bonus for matching emojis
+      resultDisplay.textContent += " Jackpot! Matched emojis!";
+    }
+
+    updateBalanceDisplay();
   });
-
-  slotMachine.appendChild(resultDisplay);
-  slotMachine.appendChild(spinButton);
-
-  slotMachinesContainer.appendChild(slotMachine);
-  addMachineToSelect(spinNumber);
+  
+  spinButtonContainer.appendChild(spinButton);
+  emojiContainer.appendChild(emojiDisplay);
+  resultContainer.appendChild(resultDisplay);
 }
 
-function addMachineToSelect(spinNumber) {
-  const option = document.createElement('option');
-  option.value = spinNumber;
-  option.textContent = `Machine ${spinNumber}`;
-  machineSelect.appendChild(option);
-}
-
+// Buy a new slot machine (costs $20)
 buySlotButton.addEventListener('click', () => {
   if (balance >= 20) {
     balance -= 20;
     spinCount += 1;
-    createSlotMachine(spinCount);
-    messageDisplay.textContent = `You created Slot Machine ${spinCount}!`;
+    createSpinButton(spinCount);
+    messageDisplay.textContent = `You bought Slot Machine ${spinCount}!`;
     updateBalanceDisplay();
   } else {
-    messageDisplay.textContent = "Not enough money to create a slot machine!";
+    messageDisplay.textContent = "Not enough money to buy a slot machine!";
   }
 });
 
-buyAutoSpinButton.addEventListener('click', () => {
-  if (balance >= autoSpinCost) {
-    balance -= autoSpinCost;
-    autoSpinCost += 10;
-    messageDisplay.textContent = `Auto-spin purchased for $${autoSpinCost - 10}. New cost: $${autoSpinCost}`;
+// Buy luck upgrade (costs $30) which increases luck
+luckUpgradeButton.addEventListener('click', () => {
+  if (balance >= 30) {
+    balance -= 30;
+    luckFactor += 0.1; // Increase luck factor by 10%
+    messageDisplay.textContent = `Luck increased! Your chances are now better.`;
     updateBalanceDisplay();
-    updateButtonTexts();
-
-    if (autoSpinInterval) clearInterval(autoSpinInterval);
-
-    const selectedMachine = machineSelect.value;
-
-    autoSpinInterval = setInterval(() => {
-      generateRandomEmojis(selectedMachine);
-    }, 1000); // Faster auto-spin interval
   } else {
-    messageDisplay.textContent = "Not enough money for Auto-Spin!";
+    messageDisplay.textContent = "Not enough money to buy luck upgrade!";
   }
 });
 
-buyLuckUpgradeButton.addEventListener('click', () => {
-  if (balance >= 50) {
-    balance -= 50;
-    luckMultiplier += 0.1;
-    messageDisplay.textContent = "Your luck has increased!";
-    updateBalanceDisplay();
-  } else {
-    messageDisplay.textContent = "Not enough money to get luckier!";
-  }
-});
-
+// Update balance display
 function updateBalanceDisplay() {
   balanceDisplay.textContent = balance.toFixed(2);
 }
 
-function updateButtonTexts() {
-  buyAutoSpinButton.textContent = `Buy Auto-Spin ($${autoSpinCost})`;
-}
-
-// Initialize the first slot machine and balance display
-createSlotMachine(spinCount);
+// Initialize the first spin button and balance display
+createSpinButton(spinCount);
 updateBalanceDisplay();
-updateButtonTexts();

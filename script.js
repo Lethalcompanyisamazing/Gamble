@@ -1,5 +1,5 @@
 let balance = 0;
-let spinCount = 1; // Start with 1 slot machine
+let spinCount = 1;
 
 const balanceDisplay = document.getElementById('balance');
 const slotMachinesContainer = document.getElementById('slotMachinesContainer');
@@ -22,8 +22,7 @@ const reelSymbols = [
   { symbol: '🔔', payout: 50 }
 ];
 
-// Play background music
-backgroundMusic.play();
+backgroundMusic.play(); // Play the background music
 
 function getRandomOutcome() {
   const totalChance = reelSymbols.length;
@@ -31,19 +30,24 @@ function getRandomOutcome() {
   return reelSymbols[randomIndex];
 }
 
-function spinReel(reelElement) {
-  return new Promise((resolve) => {
-    let spins = 7; // Number of spins
-    let spinInterval = setInterval(() => {
-      let randomSymbol = getRandomOutcome();
-      reelElement.textContent = randomSymbol.symbol;
-    }, 40); // Fast spin interval
+function generateRandomEmojis(spinNumber) {
+  const reel1 = getRandomOutcome();
+  const reel2 = getRandomOutcome();
+  const reel3 = getRandomOutcome();
 
-    setTimeout(() => {
-      clearInterval(spinInterval);
-      resolve(reelElement.textContent);
-    }, spins * 40); // Spins complete more quickly
-  });
+  const resultDisplay = document.getElementById(`result_${spinNumber}`);
+  
+  resultDisplay.textContent = `${reel1.symbol} | ${reel2.symbol} | ${reel3.symbol}`;
+
+  if (reel1.symbol === reel2.symbol && reel2.symbol === reel3.symbol) {
+    const winnings = reel1.payout * luckMultiplier;
+    balance += winnings;
+    messageDisplay.textContent = `Machine ${spinNumber}: Jackpot! You won $${winnings}!`;
+  } else {
+    messageDisplay.textContent = `Machine ${spinNumber}: Try again!`;
+  }
+
+  updateBalanceDisplay();
 }
 
 function createSlotMachine(spinNumber) {
@@ -54,46 +58,15 @@ function createSlotMachine(spinNumber) {
   resultDisplay.id = `result_${spinNumber}`;
   resultDisplay.textContent = `Result for Machine ${spinNumber}: -`;
 
-  const reel1 = document.createElement('div');
-  reel1.className = 'reel';
-  reel1.id = `reel1_${spinNumber}`;
-  reel1.textContent = '🍒';
-
-  const reel2 = document.createElement('div');
-  reel2.className = 'reel';
-  reel2.id = `reel2_${spinNumber}`;
-  reel2.textContent = '🍇';
-
-  const reel3 = document.createElement('div');
-  reel3.className = 'reel';
-  reel3.id = `reel3_${spinNumber}`;
-  reel3.textContent = '7️⃣';
-
   const spinButton = document.createElement('button');
   spinButton.textContent = `Spin Machine ${spinNumber}`;
   spinButton.id = `spinMachineButton_${spinNumber}`;
 
-  spinButton.addEventListener('click', async () => {
-    const result1 = await spinReel(reel1);
-    const result2 = await spinReel(reel2);
-    const result3 = await spinReel(reel3);
-
-    if (result1 === result2 && result2 === result3) {
-      const winningSymbol = reelSymbols.find(s => s.symbol === result1);
-      const winnings = winningSymbol.payout * luckMultiplier;
-      balance += winnings;
-      resultDisplay.textContent = `Jackpot! You won $${winnings}!`;
-    } else {
-      resultDisplay.textContent = "Try again!";
-    }
-
-    updateBalanceDisplay();
+  spinButton.addEventListener('click', () => {
+    generateRandomEmojis(spinNumber);
   });
 
-  slotMachine.appendChild(resultDisplay); // Display results above spin button
-  slotMachine.appendChild(reel1);
-  slotMachine.appendChild(reel2);
-  slotMachine.appendChild(reel3);
+  slotMachine.appendChild(resultDisplay);
   slotMachine.appendChild(spinButton);
 
   slotMachinesContainer.appendChild(slotMachine);
@@ -132,8 +105,7 @@ buyAutoSpinButton.addEventListener('click', () => {
     const selectedMachine = machineSelect.value;
 
     autoSpinInterval = setInterval(() => {
-      const spinButton = document.getElementById(`spinMachineButton_${selectedMachine}`);
-      spinButton.click(); // Trigger the spin for the selected machine
+      generateRandomEmojis(selectedMachine);
     }, 1000); // Faster auto-spin interval
   } else {
     messageDisplay.textContent = "Not enough money for Auto-Spin!";
@@ -160,6 +132,6 @@ function updateButtonTexts() {
 }
 
 // Initialize the first slot machine and balance display
-createSlotMachine(spinCount); // Automatically create the first slot machine
+createSlotMachine(spinCount);
 updateBalanceDisplay();
 updateButtonTexts();

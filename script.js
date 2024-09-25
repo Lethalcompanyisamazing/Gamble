@@ -1,92 +1,67 @@
 
 let balance = 0;
 let spinCount = 1;
-let luckFactor = 1;
+let luckMultiplier = 1;
 
 const balanceDisplay = document.getElementById('balance');
 const spinButtonContainer = document.getElementById('spinButtonContainer');
 const resultContainer = document.getElementById('resultContainer');
-const emojiContainer = document.getElementById('emojiContainer');
 const messageDisplay = document.getElementById('messageDisplay');
 const buySlotButton = document.getElementById('buySlotButton');
 const luckUpgradeButton = document.getElementById('luckUpgradeButton');
 
-// Slot machine outcomes with win percentages adjusted by luck factor
-let baseOutcomes = [
-  { name: 'Lose', percent: 0, fixed: 0, chance: 70 }, // 70% chance of losing
-  { name: 'Grape', percent: 10, fixed: 10, chance: 20 }, // 20% chance of winning Grape (now 10%)
-  { name: 'Cherry', percent: 20, fixed: 50, chance: 9 }, // 9% chance of winning Cherry (now 20%)
-  { name: '777', percent: 50, fixed: 100, chance: 1 } // 1% chance of winning 777 (now 50%)
-];
+// Emojis for the slot reels
+const emojiReel = ['🍇', '🍒', '7️⃣'];
 
-// Emoji options: grape 🍇, cherry 🍒, and 7️⃣
-const emojiOptions = ['🍇', '🍒', '7️⃣'];
+// Slot machine outcomes now match emoji results directly
+const emojiOutcomes = {
+  '🍇': { name: 'Grape', percent: 10, fixed: 10 },
+  '🍒': { name: 'Cherry', percent: 20, fixed: 50 },
+  '7️⃣': { name: '777', percent: 50, fixed: 100 }
+};
 
-// Function to pick a random outcome based on chance and luck factor
-function getRandomOutcome() {
-  const totalChance = baseOutcomes.reduce((sum, outcome) => sum + (outcome.chance * luckFactor), 0);
-  let random = Math.random() * totalChance;
-  
-  for (let outcome of baseOutcomes) {
-    if (random < outcome.chance * luckFactor) {
-      return outcome;
-    }
-    random -= outcome.chance * luckFactor;
-  }
+// Function to generate random emojis for the slot reel
+function getRandomEmoji() {
+  return emojiReel[Math.floor(Math.random() * emojiReel.length)];
 }
 
-// Generate random emojis for the reels
-function generateRandomEmojis() {
-  const emoji1 = emojiOptions[Math.floor(Math.random() * emojiOptions.length)];
-  const emoji2 = emojiOptions[Math.floor(Math.random() * emojiOptions.length)];
-  const emoji3 = emojiOptions[Math.floor(Math.random() * emojiOptions.length)];
-  
-  return [emoji1, emoji2, emoji3];
-}
-
-// Create a spin button and result display for each slot machine
+// Create a spin button and result display for each slot machine, including emoji reels
 function createSpinButton(spinNumber) {
   const spinButton = document.createElement('button');
   spinButton.textContent = `Spin Machine ${spinNumber}`;
   spinButton.style.margin = '10px';  // Add spacing between buttons
   
+  const emojiDisplay = document.createElement('p');
+  emojiDisplay.id = `emoji${spinNumber}`;
+  emojiDisplay.textContent = `${getRandomEmoji()} ${getRandomEmoji()} ${getRandomEmoji()}`;
+
   const resultDisplay = document.createElement('p');
   resultDisplay.id = `result${spinNumber}`;
   resultDisplay.textContent = `Result for Machine ${spinNumber}: -`;
-  
-  const emojiDisplay = document.createElement('p');
-  emojiDisplay.id = `emojiResult${spinNumber}`;
-  emojiDisplay.textContent = '🍇 🍒 7️⃣';  // Default display of the three emojis
-  
+
   spinButton.addEventListener('click', () => {
-    const result = getRandomOutcome();
+    // Generate new emojis
+    const emoji1 = getRandomEmoji();
+    const emoji2 = getRandomEmoji();
+    const emoji3 = getRandomEmoji();
+    emojiDisplay.textContent = `${emoji1} ${emoji2} ${emoji3}`;
+
     let winnings = 0;
-    const emojis = generateRandomEmojis();
-    emojiDisplay.textContent = `${emojis[0]} ${emojis[1]} ${emojis[2]}`;
 
-    if (result.name === 'Lose') {
-      resultDisplay.textContent = `Machine ${spinNumber}: You lost! Try again.`;
-    } else {
-      if (balance === 0) {
-        winnings = result.fixed;
-      } else {
-        winnings = (balance * result.percent) / 100;
-      }
+    // Check if emojis match for payout based on emoji result
+    if (emoji1 === emoji2 && emoji2 === emoji3) {
+      const matchingOutcome = emojiOutcomes[emoji1]; // Get the matching outcome based on emoji
+      winnings = balance === 0 ? matchingOutcome.fixed : balance * (matchingOutcome.percent / 100);
       balance += winnings;
-      resultDisplay.textContent = `Machine ${spinNumber}: ${result.name} - You won $${winnings.toFixed(2)}!`;
+      resultDisplay.textContent = `Machine ${spinNumber}: ${matchingOutcome.name} Emoji Win! You won $${winnings.toFixed(2)}!`;
+    } else {
+      resultDisplay.textContent = `Machine ${spinNumber}: No match! Try again.`;
     }
-
-    // Check if all three emojis are the same
-    if (emojis[0] === emojis[1] && emojis[1] === emojis[2]) {
-      balance += 50; // Example bonus for matching emojis
-      resultDisplay.textContent += " Jackpot! Matched emojis!";
-    }
-
     updateBalanceDisplay();
   });
-  
+
   spinButtonContainer.appendChild(spinButton);
-  emojiContainer.appendChild(emojiDisplay);
+  resultContainer.appendChild(emojiDisplay);
   resultContainer.appendChild(resultDisplay);
 }
 
@@ -103,15 +78,15 @@ buySlotButton.addEventListener('click', () => {
   }
 });
 
-// Buy luck upgrade (costs $30) which increases luck
+// Buy a luck upgrade (costs $50)
 luckUpgradeButton.addEventListener('click', () => {
-  if (balance >= 30) {
-    balance -= 30;
-    luckFactor += 0.1; // Increase luck factor by 10%
-    messageDisplay.textContent = `Luck increased! Your chances are now better.`;
+  if (balance >= 50) {
+    balance -= 50;
+    luckMultiplier *= 1.2; // Increase luck multiplier by 20%
+    messageDisplay.textContent = "Luck increased!";
     updateBalanceDisplay();
   } else {
-    messageDisplay.textContent = "Not enough money to buy luck upgrade!";
+    messageDisplay.textContent = "Not enough money to upgrade your luck!";
   }
 });
 

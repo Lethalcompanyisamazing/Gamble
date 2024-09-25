@@ -14,7 +14,6 @@ let autoSpinCost = 10;
 let autoSpinInterval = null;
 let luckMultiplier = 1.0;
 
-// Slot symbols and payouts
 const reelSymbols = [
   { symbol: '🍒', payout: 10 },
   { symbol: '🍇', payout: 20 },
@@ -23,36 +22,36 @@ const reelSymbols = [
   { symbol: '🔔', payout: 50 }
 ];
 
-// Play background music
 backgroundMusic.play();
 
-// Function to pick a random outcome
 function getRandomOutcome() {
   const totalChance = reelSymbols.length;
   const randomIndex = Math.floor(Math.random() * totalChance);
   return reelSymbols[randomIndex];
 }
 
-// Function to spin a reel and stop at a random symbol
 function spinReel(reelElement) {
   return new Promise((resolve) => {
-    let spins = 10; // Reduced spins for faster game
+    let spins = 7; // Fewer spins for faster action
     let spinInterval = setInterval(() => {
       let randomSymbol = getRandomOutcome();
       reelElement.textContent = randomSymbol.symbol;
-    }, 50); // Faster spin interval
+    }, 40); // Even faster spin interval
 
     setTimeout(() => {
       clearInterval(spinInterval);
-      resolve(reelElement.textContent); // Return the final symbol
-    }, spins * 50); // Stop faster
+      resolve(reelElement.textContent);
+    }, spins * 40); // Spins complete more quickly
   });
 }
 
-// Function to create a slot machine
 function createSlotMachine(spinNumber) {
   const slotMachine = document.createElement('div');
   slotMachine.className = 'slotMachine';
+
+  const resultDisplay = document.createElement('p');
+  resultDisplay.id = `result_${spinNumber}`;
+  resultDisplay.textContent = `Result for Machine ${spinNumber}: -`;
 
   const reel1 = document.createElement('div');
   reel1.className = 'reel';
@@ -73,17 +72,11 @@ function createSlotMachine(spinNumber) {
   spinButton.textContent = `Spin Machine ${spinNumber}`;
   spinButton.id = `spinMachineButton_${spinNumber}`;
 
-  const resultDisplay = document.createElement('p');
-  resultDisplay.id = `result_${spinNumber}`;
-  resultDisplay.textContent = `Result for Machine ${spinNumber}: -`;
-
-  // Handle spin click
   spinButton.addEventListener('click', async () => {
     const result1 = await spinReel(reel1);
     const result2 = await spinReel(reel2);
     const result3 = await spinReel(reel3);
 
-    // Check if all three reels match
     if (result1 === result2 && result2 === result3) {
       const winningSymbol = reelSymbols.find(s => s.symbol === result1);
       const winnings = winningSymbol.payout * luckMultiplier;
@@ -92,21 +85,20 @@ function createSlotMachine(spinNumber) {
     } else {
       resultDisplay.textContent = "Try again!";
     }
-    
+
     updateBalanceDisplay();
   });
 
+  slotMachine.appendChild(resultDisplay); // Results go above the spin button
   slotMachine.appendChild(reel1);
   slotMachine.appendChild(reel2);
   slotMachine.appendChild(reel3);
   slotMachine.appendChild(spinButton);
-  slotMachine.appendChild(resultDisplay);
 
   slotMachinesContainer.appendChild(slotMachine);
   addMachineToSelect(spinNumber);
 }
 
-// Function to add the machine to the dropdown for auto-spin selection
 function addMachineToSelect(spinNumber) {
   const option = document.createElement('option');
   option.value = spinNumber;
@@ -114,7 +106,6 @@ function addMachineToSelect(spinNumber) {
   machineSelect.appendChild(option);
 }
 
-// Buy a new slot machine (costs $20)
 buySlotButton.addEventListener('click', () => {
   if (balance >= 20) {
     balance -= 20;
@@ -127,7 +118,6 @@ buySlotButton.addEventListener('click', () => {
   }
 });
 
-// Buy auto-spin upgrade (cost increases each time)
 buyAutoSpinButton.addEventListener('click', () => {
   if (balance >= autoSpinCost) {
     balance -= autoSpinCost;
@@ -139,18 +129,16 @@ buyAutoSpinButton.addEventListener('click', () => {
     if (autoSpinInterval) clearInterval(autoSpinInterval);
 
     const selectedMachine = machineSelect.value;
-    const resultDisplay = document.getElementById(`result_${selectedMachine}`);
     
     autoSpinInterval = setInterval(() => {
       const spinButton = document.getElementById(`spinMachineButton_${selectedMachine}`);
       spinButton.click(); // Trigger the spin for the selected machine
-    }, 1500); // Faster auto-spin interval
+    }, 1000); // Faster auto-spin interval
   } else {
     messageDisplay.textContent = "Not enough money for Auto-Spin!";
   }
 });
 
-// Buy luck upgrade to improve chances (cost $50)
 buyLuckUpgradeButton.addEventListener('click', () => {
   if (balance >= 50) {
     balance -= 50;
@@ -162,17 +150,14 @@ buyLuckUpgradeButton.addEventListener('click', () => {
   }
 });
 
-// Update balance display
 function updateBalanceDisplay() {
   balanceDisplay.textContent = balance.toFixed(2);
 }
 
-// Update button texts with dynamic prices
 function updateButtonTexts() {
   buyAutoSpinButton.textContent = `Buy Auto-Spin ($${autoSpinCost})`;
 }
 
-// Initialize the first slot machine and balance display
 createSlotMachine(spinCount);
 updateBalanceDisplay();
 updateButtonTexts();

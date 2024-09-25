@@ -1,5 +1,5 @@
 let balance = 0;
-let spinCount = 1;
+let spinCount = 1; // Start with 1 slot machine
 
 const balanceDisplay = document.getElementById('balance');
 const slotMachinesContainer = document.getElementById('slotMachinesContainer');
@@ -22,6 +22,7 @@ const reelSymbols = [
   { symbol: '🔔', payout: 50 }
 ];
 
+// Play background music
 backgroundMusic.play();
 
 function getRandomOutcome() {
@@ -32,11 +33,11 @@ function getRandomOutcome() {
 
 function spinReel(reelElement) {
   return new Promise((resolve) => {
-    let spins = 7; // Fewer spins for faster action
+    let spins = 7; // Number of spins
     let spinInterval = setInterval(() => {
       let randomSymbol = getRandomOutcome();
       reelElement.textContent = randomSymbol.symbol;
-    }, 40); // Even faster spin interval
+    }, 40); // Fast spin interval
 
     setTimeout(() => {
       clearInterval(spinInterval);
@@ -89,7 +90,7 @@ function createSlotMachine(spinNumber) {
     updateBalanceDisplay();
   });
 
-  slotMachine.appendChild(resultDisplay); // Results go above the spin button
+  slotMachine.appendChild(resultDisplay); // Display results above spin button
   slotMachine.appendChild(reel1);
   slotMachine.appendChild(reel2);
   slotMachine.appendChild(reel3);
@@ -125,11 +126,11 @@ buyAutoSpinButton.addEventListener('click', () => {
     messageDisplay.textContent = `Auto-spin purchased for $${autoSpinCost - 10}. New cost: $${autoSpinCost}`;
     updateBalanceDisplay();
     updateButtonTexts();
-    
+
     if (autoSpinInterval) clearInterval(autoSpinInterval);
 
     const selectedMachine = machineSelect.value;
-    
+
     autoSpinInterval = setInterval(() => {
       const spinButton = document.getElementById(`spinMachineButton_${selectedMachine}`);
       spinButton.click(); // Trigger the spin for the selected machine
@@ -158,6 +159,7 @@ function updateButtonTexts() {
   buyAutoSpinButton.textContent = `Buy Auto-Spin ($${autoSpinCost})`;
 }
 
-createSlotMachine(spinCount);
+// Initialize the first slot machine and balance display
+createSlotMachine(spinCount); // Automatically create the first slot machine
 updateBalanceDisplay();
 updateButtonTexts();

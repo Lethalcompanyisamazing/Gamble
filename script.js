@@ -30,8 +30,7 @@ const machineSelect = document.getElementById('machineSelect');
 const outcomes = [
   { emoji: '🍇', fixed: 10, chance: 20 }, // 20% chance
   { emoji: '🍒', fixed: 50, chance: 9 },  // 9% chance
-  { emoji: '777', fixed: 100, chance: 1 }, // 1% chance
-  { emoji: '💀', fixed: 0, chance: 60 }
+  { emoji: '777', fixed: 100, chance: 1 } // 1% chance
 ];
 
 // Function to pick a random outcome based on chance
@@ -75,7 +74,6 @@ function createSlotMachine(spinNumber) {
   spinButton.textContent = `Spin Slot ${spinNumber}`;
   spinButton.addEventListener('click', () => {
     if (chanceToLose()) {
-      const lostEmojis = getRandomEmojis(); // Get three random emojis
       resultDisplay.textContent = `You LOST! ${lostEmojis}`;
       saveState(); // Save the state even if the player loses
       return;

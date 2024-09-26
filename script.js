@@ -128,7 +128,11 @@ wipeSaveButton.addEventListener('click', () => {
   // Clear the slot machines from the UI
   slotMachinesContainer.innerHTML = ''; 
   machineSelect.innerHTML = ''; // Clear the machine select dropdown
-  messageDisplay.textContent = "Game state wiped!"; // Display a message
+
+  // Create a beginner slot machine
+  createSlotMachine(spinCount);
+  
+  messageDisplay.textContent = "Game state wiped! You have a beginner slot machine."; // Display a message
 });
 
 // Update the balance display

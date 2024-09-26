@@ -1,3 +1,4 @@
+// Ensure a slot machine is always created at startup
 let balance = parseFloat(localStorage.getItem('balance')) || 0;
 let spinCount = parseInt(localStorage.getItem('spinCount')) || 1;  // Default to 1 so there's always at least one machine
 let autoSpinCost = parseInt(localStorage.getItem('autoSpinCost')) || 10;
@@ -24,12 +25,22 @@ const reelSymbols = [
 
 backgroundMusic.play(); // Play the background music
 
+// Ensure a slot machine is always created at startup
+function createInitialSlotMachine() {
+  if (!localStorage.getItem('spinCount')) {
+    createSlotMachine(1);
+    saveGameState();  // Save the initial state
+  }
+}
+
+// Function to get random outcomes
 function getRandomOutcome() {
   const totalChance = reelSymbols.length;
   const randomIndex = Math.floor(Math.random() * totalChance);
   return reelSymbols[randomIndex];
 }
 
+// Generate random emojis
 function generateRandomEmojis(spinNumber) {
   const reel1 = getRandomOutcome();
   const reel2 = getRandomOutcome();
@@ -51,6 +62,7 @@ function generateRandomEmojis(spinNumber) {
   saveGameState();
 }
 
+// Create a new slot machine
 function createSlotMachine(spinNumber) {
   const slotMachine = document.createElement('div');
   slotMachine.className = 'slotMachine';
@@ -74,6 +86,7 @@ function createSlotMachine(spinNumber) {
   addMachineToSelect(spinNumber);
 }
 
+// Add machine to dropdown
 function addMachineToSelect(spinNumber) {
   const option = document.createElement('option');
   option.value = spinNumber;
@@ -81,6 +94,7 @@ function addMachineToSelect(spinNumber) {
   machineSelect.appendChild(option);
 }
 
+// Event listener for buying new slot machine
 buySlotButton.addEventListener('click', () => {
   if (balance >= 20) {
     balance -= 20;
@@ -94,6 +108,7 @@ buySlotButton.addEventListener('click', () => {
   }
 });
 
+// Auto-spin logic
 buyAutoSpinButton.addEventListener('click', () => {
   if (balance >= autoSpinCost) {
     balance -= autoSpinCost;
@@ -114,6 +129,7 @@ buyAutoSpinButton.addEventListener('click', () => {
   }
 });
 
+// Luck upgrade logic
 buyLuckUpgradeButton.addEventListener('click', () => {
   if (balance >= 50) {
     balance -= 50;
@@ -126,14 +142,17 @@ buyLuckUpgradeButton.addEventListener('click', () => {
   }
 });
 
+// Update balance display
 function updateBalanceDisplay() {
   balanceDisplay.textContent = balance.toFixed(2);
 }
 
+// Update button texts
 function updateButtonTexts() {
   buyAutoSpinButton.textContent = `Buy Auto-Spin ($${autoSpinCost})`;
 }
 
+// Save game state to localStorage
 function saveGameState() {
   localStorage.setItem('balance', balance);
   localStorage.setItem('spinCount', spinCount);
@@ -141,19 +160,15 @@ function saveGameState() {
   localStorage.setItem('luckMultiplier', luckMultiplier);
 }
 
+// Load game state from localStorage
 function loadGameState() {
   for (let i = 1; i <= spinCount; i++) {
     createSlotMachine(i);
   }
 }
 
-// Ensure a slot machine is always created at startup
-if (!localStorage.getItem('spinCount')) {
-  createSlotMachine(1);
-}
-
-// Initialize the slot machines and balance display
-loadGameState();  // Load any saved data or create one slot machine if none exists
+// Ensure the game starts with a slot machine and saved state
+createInitialSlotMachine();
+loadGameState();
 updateBalanceDisplay();
 updateButtonTexts();
-

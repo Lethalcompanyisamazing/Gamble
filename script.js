@@ -45,9 +45,10 @@ function getRandomOutcome() {
     random -= outcome.chance;
   }
 }
+
 // Function to determine if the player loses on the slot machine
 function chanceToLose() {
-  return Math.random() < 0.65; // 70% chance to lose
+  return Math.random() < 0.7; // 70% chance to lose
 }
 
 // Create a slot machine
@@ -63,7 +64,7 @@ function createSlotMachine(spinNumber) {
   spinButton.textContent = `Spin Slot ${spinNumber}`;
   spinButton.addEventListener('click', () => {
     if (chanceToLose()) {
-      resultDisplay.textContent = `You LOST! ${lostEmojis}`;
+      resultDisplay.textContent = `You LOST!`; // Show losing message without emojis
       saveState(); // Save the state even if the player loses
       return;
     }

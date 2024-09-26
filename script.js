@@ -130,7 +130,7 @@ wipeSaveButton.addEventListener('click', () => {
   machineSelect.innerHTML = ''; // Clear the machine select dropdown
 
   // Create a beginner slot machine
-  createSlotMachine(spinCount);
+  createSlotMachine(spinCount); // This gives the player a starter machine
   
   messageDisplay.textContent = "Game state wiped! You have a beginner slot machine."; // Display a message
 });

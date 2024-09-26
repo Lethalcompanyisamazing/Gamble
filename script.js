@@ -46,6 +46,11 @@ function getRandomOutcome() {
   }
 }
 
+// Function to determine if an action succeeds or fails
+function chanceToLose() {
+  return Math.random() < 0.3; // 30% chance to lose the action
+}
+
 // Create a slot machine
 function createSlotMachine(spinNumber) {
   const slotMachineDiv = document.createElement('div');
@@ -81,6 +86,11 @@ function createSlotMachine(spinNumber) {
 
 // Buy a new slot machine (costs $20)
 buySlotButton.addEventListener('click', () => {
+  if (chanceToLose()) {
+    messageDisplay.textContent = "You lost the chance to buy a slot machine!";
+    return;
+  }
+  
   if (balance >= 20) {
     balance -= 20;
     spinCount += 1;
@@ -95,6 +105,11 @@ buySlotButton.addEventListener('click', () => {
 
 // Buy an auto-spin upgrade (costs $10)
 buyAutoSpinButton.addEventListener('click', () => {
+  if (chanceToLose()) {
+    messageDisplay.textContent = "You lost the chance to buy auto-spin!";
+    return;
+  }
+  
   if (balance >= 10) {
     balance -= 10;
     messageDisplay.textContent = "Auto-spin upgrade purchased!";
@@ -107,6 +122,11 @@ buyAutoSpinButton.addEventListener('click', () => {
 
 // Buy a luck upgrade (costs $50)
 buyLuckUpgradeButton.addEventListener('click', () => {
+  if (chanceToLose()) {
+    messageDisplay.textContent = "You lost the chance to buy a luck upgrade!";
+    return;
+  }
+  
   if (balance >= 50) {
     balance -= 50;
     messageDisplay.textContent = "Luck upgrade purchased!";

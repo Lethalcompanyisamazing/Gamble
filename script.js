@@ -45,17 +45,6 @@ function getRandomOutcome() {
     random -= outcome.chance;
   }
 }
-
-// Function to get three random emojis
-function getRandomEmojis() {
-  const randomEmojis = [];
-  for (let i = 0; i < 3; i++) {
-    const outcome = getRandomOutcome();
-    randomEmojis.push(outcome.emoji);
-  }
-  return randomEmojis.join(' '); // Join emojis with a space
-}
-
 // Function to determine if the player loses on the slot machine
 function chanceToLose() {
   return Math.random() < 0.7; // 70% chance to lose

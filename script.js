@@ -3,24 +3,18 @@ function saveState() {
   localStorage.setItem('balance', balance);
   localStorage.setItem('spinCount', spinCount);
   localStorage.setItem('machines', JSON.stringify(machines));
-  localStorage.setItem('autoSpinPrice', autoSpinPrice);
-  localStorage.setItem('speedUpgradePrice', speedUpgradePrice);
 }
 
 function loadState() {
   balance = parseFloat(localStorage.getItem('balance')) || 0;
   spinCount = parseInt(localStorage.getItem('spinCount')) || 1;
   machines = JSON.parse(localStorage.getItem('machines')) || [];
-  autoSpinPrice = parseInt(localStorage.getItem('autoSpinPrice')) || 10;
-  speedUpgradePrice = parseInt(localStorage.getItem('speedUpgradePrice')) || 15;
 }
 
 // Variables
 let balance = 0;
 let spinCount = 1;
 let machines = [];
-let autoSpinPrice = 10;
-let speedUpgradePrice = 15;
 
 // HTML Elements
 const balanceDisplay = document.getElementById('balance');
@@ -28,7 +22,7 @@ const slotMachinesContainer = document.getElementById('slotMachinesContainer');
 const messageDisplay = document.getElementById('messageDisplay');
 const buySlotButton = document.getElementById('buySlotButton');
 const buyAutoSpinButton = document.getElementById('buyAutoSpinButton');
-const buySpeedUpgradeButton = document.getElementById('buySpeedUpgradeButton');
+const buyLuckUpgradeButton = document.getElementById('buyLuckUpgradeButton');
 const machineSelect = document.getElementById('machineSelect');
 
 // Outcomes (emojis) and chances
@@ -51,21 +45,6 @@ function getRandomOutcome() {
   }
 }
 
-// Function to update the machine spin interval speed
-function updateMachineSpeed(machine, speedMultiplier) {
-  clearInterval(machine.autoSpinInterval); // Clear previous interval
-
-  machine.autoSpinInterval = setInterval(() => {
-    const result = getRandomOutcome();
-    const winnings = result.fixed;
-    machine.balance += winnings;
-    machine.resultDisplay.textContent = `${result.emoji} - You won $${winnings}!`;
-    balance += winnings;
-    updateBalanceDisplay();
-    saveState();
-  }, machine.autoSpinSpeed / speedMultiplier);
-}
-
 // Create a slot machine
 function createSlotMachine(spinNumber) {
   const slotMachineDiv = document.createElement('div');
@@ -85,31 +64,24 @@ function createSlotMachine(spinNumber) {
     updateBalanceDisplay();
     saveState();
   });
-
+  
   slotMachineDiv.appendChild(spinButton);
   slotMachinesContainer.appendChild(slotMachineDiv);
-
-  // Save machine info
-  machines.push({ 
-    spinNumber, 
-    resultDisplay, 
-    balance: 0, 
-    autoSpinSpeed: 2000,  // Default speed for auto-spin
-    autoSpinInterval: null
-  });
 
   // Add the slot machine to the select dropdown for auto-spin
   const option = document.createElement('option');
   option.value = spinNumber;
   option.textContent = `Slot ${spinNumber}`;
   machineSelect.appendChild(option);
+
+  // Save machine info
+  machines.push({ spinNumber, winnings: 0 });
 }
 
 // Buy a new slot machine (costs $20)
 buySlotButton.addEventListener('click', () => {
-  const price = 20;
-  if (balance >= price) {
-    balance -= price;
+  if (balance >= 20) {
+    balance -= 20;
     spinCount += 1;
     createSlotMachine(spinCount);
     messageDisplay.textContent = `You bought Slot Machine ${spinCount}!`;
@@ -120,25 +92,11 @@ buySlotButton.addEventListener('click', () => {
   }
 });
 
-// Buy an auto-spin upgrade (price increases with each purchase)
+// Buy an auto-spin upgrade (costs $10)
 buyAutoSpinButton.addEventListener('click', () => {
-  if (balance >= autoSpinPrice) {
-    balance -= autoSpinPrice;
-    const selectedMachine = machines[machineSelect.value - 1];
-    if (selectedMachine) {
-      clearInterval(selectedMachine.autoSpinInterval); // Stop previous auto-spin if any
-      selectedMachine.autoSpinInterval = setInterval(() => {
-        const result = getRandomOutcome();
-        const winnings = result.fixed;
-        selectedMachine.balance += winnings;
-        selectedMachine.resultDisplay.textContent = `${result.emoji} - You won $${winnings}!`;
-        balance += winnings;
-        updateBalanceDisplay();
-        saveState();
-      }, selectedMachine.autoSpinSpeed);
-      messageDisplay.textContent = "Auto-spin activated!";
-    }
-    autoSpinPrice += 5; // Increase the price for the next purchase
+  if (balance >= 10) {
+    balance -= 10;
+    messageDisplay.textContent = "Auto-spin upgrade purchased!";
     updateBalanceDisplay();
     saveState();
   } else {
@@ -146,20 +104,15 @@ buyAutoSpinButton.addEventListener('click', () => {
   }
 });
 
-// Buy a speed upgrade for auto-spin (price increases with each purchase)
-buySpeedUpgradeButton.addEventListener('click', () => {
-  if (balance >= speedUpgradePrice) {
-    balance -= speedUpgradePrice;
-    const selectedMachine = machines[machineSelect.value - 1];
-    if (selectedMachine && selectedMachine.autoSpinInterval) {
-      updateMachineSpeed(selectedMachine, 2); // Double the speed of auto-spin
-      messageDisplay.textContent = "Auto-spin speed increased!";
-    }
-    speedUpgradePrice += 10; // Increase the price for the next purchase
+// Buy a luck upgrade (costs $50)
+buyLuckUpgradeButton.addEventListener('click', () => {
+  if (balance >= 50) {
+    balance -= 50;
+    messageDisplay.textContent = "Luck upgrade purchased!";
     updateBalanceDisplay();
     saveState();
   } else {
-    messageDisplay.textContent = "Not enough money to buy speed upgrade!";
+    messageDisplay.textContent = "Not enough money to buy luck upgrade!";
   }
 });
 

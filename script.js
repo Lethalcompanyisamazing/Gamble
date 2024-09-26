@@ -56,9 +56,9 @@ function getRandomEmojis() {
   return randomEmojis.join(' '); // Join emojis with a space
 }
 
-// Function to determine if an action succeeds or fails
+// Function to determine if the player loses on the slot machine
 function chanceToLose() {
-  return Math.random() < 0.3; // 30% chance to lose the action
+  return Math.random() < 0.3; // 30% chance to lose
 }
 
 // Create a slot machine
@@ -73,6 +73,13 @@ function createSlotMachine(spinNumber) {
   const spinButton = document.createElement('button');
   spinButton.textContent = `Spin Slot ${spinNumber}`;
   spinButton.addEventListener('click', () => {
+    if (chanceToLose()) {
+      const lostEmojis = getRandomEmojis(); // Get three random emojis
+      resultDisplay.textContent = `You LOST! ${lostEmojis}`;
+      saveState(); // Save the state even if the player loses
+      return;
+    }
+
     const result = getRandomOutcome();
     const winnings = result.fixed;
     balance += winnings;
@@ -96,12 +103,6 @@ function createSlotMachine(spinNumber) {
 
 // Buy a new slot machine (costs $20)
 buySlotButton.addEventListener('click', () => {
-  if (chanceToLose()) {
-    const lostEmojis = getRandomEmojis(); // Get three random emojis
-    messageDisplay.textContent = `You LOST! ${lostEmojis}`;
-    return;
-  }
-  
   if (balance >= 20) {
     balance -= 20;
     spinCount += 1;
@@ -116,12 +117,6 @@ buySlotButton.addEventListener('click', () => {
 
 // Buy an auto-spin upgrade (costs $10)
 buyAutoSpinButton.addEventListener('click', () => {
-  if (chanceToLose()) {
-    const lostEmojis = getRandomEmojis(); // Get three random emojis
-    messageDisplay.textContent = `You LOST! ${lostEmojis}`;
-    return;
-  }
-  
   if (balance >= 10) {
     balance -= 10;
     messageDisplay.textContent = "Auto-spin upgrade purchased!";
@@ -134,12 +129,6 @@ buyAutoSpinButton.addEventListener('click', () => {
 
 // Buy a luck upgrade (costs $50)
 buyLuckUpgradeButton.addEventListener('click', () => {
-  if (chanceToLose()) {
-    const lostEmojis = getRandomEmojis(); // Get three random emojis
-    messageDisplay.textContent = `You LOST! ${lostEmojis}`;
-    return;
-  }
-  
   if (balance >= 50) {
     balance -= 50;
     messageDisplay.textContent = "Luck upgrade purchased!";

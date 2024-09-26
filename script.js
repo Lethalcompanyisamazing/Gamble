@@ -46,6 +46,16 @@ function getRandomOutcome() {
   }
 }
 
+// Function to get three random emojis
+function getRandomEmojis() {
+  const randomEmojis = [];
+  for (let i = 0; i < 3; i++) {
+    const outcome = getRandomOutcome();
+    randomEmojis.push(outcome.emoji);
+  }
+  return randomEmojis.join(' '); // Join emojis with a space
+}
+
 // Function to determine if an action succeeds or fails
 function chanceToLose() {
   return Math.random() < 0.3; // 30% chance to lose the action
@@ -87,7 +97,8 @@ function createSlotMachine(spinNumber) {
 // Buy a new slot machine (costs $20)
 buySlotButton.addEventListener('click', () => {
   if (chanceToLose()) {
-    messageDisplay.textContent = "You lost the chance to buy a slot machine!";
+    const lostEmojis = getRandomEmojis(); // Get three random emojis
+    messageDisplay.textContent = `You LOST! ${lostEmojis}`;
     return;
   }
   
@@ -106,7 +117,8 @@ buySlotButton.addEventListener('click', () => {
 // Buy an auto-spin upgrade (costs $10)
 buyAutoSpinButton.addEventListener('click', () => {
   if (chanceToLose()) {
-    messageDisplay.textContent = "You lost the chance to buy auto-spin!";
+    const lostEmojis = getRandomEmojis(); // Get three random emojis
+    messageDisplay.textContent = `You LOST! ${lostEmojis}`;
     return;
   }
   
@@ -123,7 +135,8 @@ buyAutoSpinButton.addEventListener('click', () => {
 // Buy a luck upgrade (costs $50)
 buyLuckUpgradeButton.addEventListener('click', () => {
   if (chanceToLose()) {
-    messageDisplay.textContent = "You lost the chance to buy a luck upgrade!";
+    const lostEmojis = getRandomEmojis(); // Get three random emojis
+    messageDisplay.textContent = `You LOST! ${lostEmojis}`;
     return;
   }
   

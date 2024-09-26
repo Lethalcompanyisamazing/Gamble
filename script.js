@@ -30,7 +30,8 @@ const machineSelect = document.getElementById('machineSelect');
 const outcomes = [
   { emoji: '🍇', fixed: 10, chance: 20 }, // 20% chance
   { emoji: '🍒', fixed: 50, chance: 9 },  // 9% chance
-  { emoji: '777', fixed: 100, chance: 1 } // 1% chance
+  { emoji: '777', fixed: 100, chance: 1 }, // 1% chance
+  { emoji: '💀', fixed: 0, chance: 60 }
 ];
 
 // Function to pick a random outcome based on chance

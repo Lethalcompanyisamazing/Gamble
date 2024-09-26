@@ -1,1 +1,114 @@
+/* General styling */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Container for the entire app */
+#app {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: white;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+/* Header styling */
+h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Balance display */
+p {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+/* Slot machines container */
+#slotMachinesContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+/* Slot machine styling */
+.slotMachine {
+  background-color: #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  width: 180px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Result text */
+.slotMachine p {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+/* Spin button */
+.slotMachine button {
+  padding: 10px;
+  font-size: 14px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.slotMachine button:hover {
+  background-color: #45a049;
+}
+
+/* Upgrade buttons styling */
+#upgradeContainer {
+  margin-bottom: 20px;
+}
+
+#upgradeContainer button {
+  padding: 10px 20px;
+  margin: 10px;
+  font-size: 14px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#upgradeContainer button:hover {
+  background-color: #1e88e5;
+}
+
+/* Dropdown for selecting slot machine for auto-spin */
+select {
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+/* Message display */
+#messageDisplay {
+  font-size: 16px;
+  color: #333;
+  margin-top: 20px;
+  min-height: 24px; /* To maintain space even if there's no message */
+}
+
+/* Ensure audio controls are hidden */
+audio {
+  display: none;
+}
 

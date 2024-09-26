@@ -1,5 +1,5 @@
 // Ensure a slot machine is always created at startup
-let balance = parseFloat(localStorage.getItem('balance')) || 0;
+let balance = parseFloat(localStorage.getItem('balance')) || 20;
 let spinCount = parseInt(localStorage.getItem('spinCount')) || 1;  // Default to 1 so there's always at least one machine
 let autoSpinCost = parseInt(localStorage.getItem('autoSpinCost')) || 10;
 let luckMultiplier = parseFloat(localStorage.getItem('luckMultiplier')) || 1.0;

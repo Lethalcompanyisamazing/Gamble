@@ -1,5 +1,5 @@
 let balance = parseFloat(localStorage.getItem('balance')) || 0;
-let spinCount = parseInt(localStorage.getItem('spinCount')) || 1;
+let spinCount = parseInt(localStorage.getItem('spinCount')) || 1;  // Default to 1 so there's always at least one machine
 let autoSpinCost = parseInt(localStorage.getItem('autoSpinCost')) || 10;
 let luckMultiplier = parseFloat(localStorage.getItem('luckMultiplier')) || 1.0;
 
@@ -147,7 +147,13 @@ function loadGameState() {
   }
 }
 
-// Initialize the first slot machine and balance display
-loadGameState(); // Load previous state if it exists
+// Ensure a slot machine is always created at startup
+if (!localStorage.getItem('spinCount')) {
+  createSlotMachine(1);
+}
+
+// Initialize the slot machines and balance display
+loadGameState();  // Load any saved data or create one slot machine if none exists
 updateBalanceDisplay();
 updateButtonTexts();
+

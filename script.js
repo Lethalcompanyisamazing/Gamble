@@ -47,7 +47,7 @@ function getRandomOutcome() {
 }
 // Function to determine if the player loses on the slot machine
 function chanceToLose() {
-  return Math.random() < 0.7; // 70% chance to lose
+  return Math.random() < 0.65; // 70% chance to lose
 }
 
 // Create a slot machine

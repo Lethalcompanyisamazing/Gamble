@@ -1,48 +1,41 @@
+# Updated JavaScript to save game state using localStorage
 
-let balance = localStorage.getItem('balance') ? parseFloat(localStorage.getItem('balance')) : 0;
-let spinCount = localStorage.getItem('spinCount') ? parseInt(localStorage.getItem('spinCount')) : 1;
+js_content_v7 = """
+let balance = 0;
+let spinCount = 1;
 let luckMultiplier = 1;
-let autoSpinInterval = null;
 
-const balanceDisplay = document.getElementById('balance');
-const spinButtonContainer = document.getElementById('spinButtonContainer');
-const resultContainer = document.getElementById('resultContainer');
-const messageDisplay = document.getElementById('messageDisplay');
-const buySlotButton = document.getElementById('buySlotButton');
-const luckUpgradeButton = document.getElementById('luckUpgradeButton');
-const autoSpinButton = document.getElementById('autoSpinButton');
-
-// Emojis for the slot reels
-const emojiReel = ['🍇', '🍒', '7️⃣'];
-
-// Slot machine outcomes
-const baseOutcomes = [
-  { name: 'Lose', percent: 0, fixed: 0, chance: 70 }, // 70% chance of losing
-  { name: 'Grape', percent: 10, fixed: 10, chance: 20 }, // 20% chance of winning Grape
-  { name: 'Cherry', percent: 20, fixed: 50, chance: 9 }, // 9% chance of winning Cherry
-  { name: '777', percent: 50, fixed: 100, chance: 1 } // 1% chance of winning 777
-];
-
-// Function to pick a random outcome based on chance and luck multiplier
-function getRandomOutcome() {
-  const totalChance = baseOutcomes.reduce((sum, outcome) => sum + outcome.chance, 0) * luckMultiplier;
-  let random = Math.random() * totalChance;
+// Load saved game state from localStorage
+function loadGameState() {
+  const savedBalance = localStorage.getItem('balance');
+  const savedSpinCount = localStorage.getItem('spinCount');
+  const savedLuckMultiplier = localStorage.getItem('luckMultiplier');
   
-  for (let outcome of baseOutcomes) {
-    if (random < outcome.chance * luckMultiplier) {
-      return outcome;
-    }
-    random -= outcome.chance * luckMultiplier;
-  }
+  if (savedBalance !== null) balance = parseFloat(savedBalance);
+  if (savedSpinCount !== null) spinCount = parseInt(savedSpinCount, 10);
+  if (savedLuckMultiplier !== null) luckMultiplier = parseFloat(savedLuckMultiplier);
+
+  updateBalanceDisplay();
 }
 
-// Function to update the local storage
-function updateLocalStorage() {
+// Save game state to localStorage
+function saveGameState() {
   localStorage.setItem('balance', balance.toFixed(2));
   localStorage.setItem('spinCount', spinCount);
+  localStorage.setItem('luckMultiplier', luckMultiplier.toFixed(2));
 }
 
-// Create a spin button and result display for each slot machine
+// Update balance display
+function updateBalanceDisplay() {
+  balanceDisplay.textContent = balance.toFixed(2);
+}
+
+// Function to generate random emojis for the slot reel
+function getRandomEmoji() {
+  return emojiReel[Math.floor(Math.random() * emojiReel.length)];
+}
+
+// Create a spin button and result display for each slot machine, including emoji reels
 function createSpinButton(spinNumber) {
   const spinButton = document.createElement('button');
   spinButton.textContent = `Spin Machine ${spinNumber}`;
@@ -60,19 +53,21 @@ function createSpinButton(spinNumber) {
     const result = getRandomOutcome();
     let winnings = 0;
     
+    // Display corresponding emoji for win or random emojis for loss
     if (result.name === 'Lose') {
       emojiDisplay.textContent = `${getRandomEmoji()} ${getRandomEmoji()} ${getRandomEmoji()}`;
       resultDisplay.textContent = `Machine ${spinNumber}: You lost! Try again.`;
     } else {
       const matchingEmoji = emojiOutcomes[result.name].emoji;
       emojiDisplay.textContent = `${matchingEmoji} ${matchingEmoji} ${matchingEmoji}`;
+
       winnings = balance === 0 ? result.fixed : (balance * result.percent) / 100;
       balance += winnings;
       resultDisplay.textContent = `Machine ${spinNumber}: ${result.name} - You won $${winnings.toFixed(2)}!`;
     }
 
     updateBalanceDisplay();
-    updateLocalStorage(); // Update local storage after a spin
+    saveGameState(); // Save game state after each spin
   });
 
   spinButtonContainer.appendChild(spinButton);
@@ -88,7 +83,7 @@ buySlotButton.addEventListener('click', () => {
     createSpinButton(spinCount);
     messageDisplay.textContent = `You bought Slot Machine ${spinCount}!`;
     updateBalanceDisplay();
-    updateLocalStorage(); // Update local storage after buying
+    saveGameState(); // Save game state after buying slot machine
   } else {
     messageDisplay.textContent = "Not enough money to buy a slot machine!";
   }
@@ -101,49 +96,27 @@ luckUpgradeButton.addEventListener('click', () => {
     luckMultiplier *= 1.2; // Increase luck multiplier by 20%
     messageDisplay.textContent = "Luck increased!";
     updateBalanceDisplay();
-    updateLocalStorage(); // Update local storage after upgrade
+    saveGameState(); // Save game state after upgrading luck
   } else {
     messageDisplay.textContent = "Not enough money to upgrade your luck!";
   }
 });
 
-// Auto-spin functionality
-autoSpinButton.addEventListener('click', () => {
-  if (autoSpinInterval) {
-    clearInterval(autoSpinInterval); // Stop auto-spin if already running
-    autoSpinButton.textContent = "Start Auto Spin";
-    autoSpinInterval = null;
-  } else {
-    autoSpinButton.textContent = "Stop Auto Spin";
-    autoSpinInterval = setInterval(() => {
-      const result = getRandomOutcome();
-      let winnings = 0;
-      
-      const emojiDisplay = document.getElementById(`emoji${1}`); // Adjust for which machine you want to auto-spin
-      const resultDisplay = document.getElementById(`result${1}`);
-
-      if (result.name === 'Lose') {
-        emojiDisplay.textContent = `${getRandomEmoji()} ${getRandomEmoji()} ${getRandomEmoji()}`;
-        resultDisplay.textContent = `Machine 1: You lost! Try again.`;
-      } else {
-        const matchingEmoji = emojiOutcomes[result.name].emoji;
-        emojiDisplay.textContent = `${matchingEmoji} ${matchingEmoji} ${matchingEmoji}`;
-        winnings = balance === 0 ? result.fixed : (balance * result.percent) / 100;
-        balance += winnings;
-        resultDisplay.textContent = `Machine 1: ${result.name} - You won $${winnings.toFixed(2)}!`;
-      }
-
-      updateBalanceDisplay();
-      updateLocalStorage(); // Update local storage during auto-spin
-    }, 2000); // Set auto spin interval (e.g., 2000 ms = 2 seconds)
-  }
+// Initialize the game by loading saved state and setting up the initial UI
+window.addEventListener('load', () => {
+  loadGameState();
+  createSpinButton(spinCount);
 });
 
-// Update balance display
-function updateBalanceDisplay() {
-  balanceDisplay.textContent = balance.toFixed(2);
-}
+// Save game state when the page is about to be closed
+window.addEventListener('beforeunload', () => {
+  saveGameState();
+});
 
-// Initialize the first spin button and balance display
-createSpinButton(spinCount);
-updateBalanceDisplay();
+"""
+
+# Saving the updated files with localStorage functionality
+with open('/mnt/data/script_v7.js', 'w') as js_file:
+    js_file.write(js_content_v7)
+
+"/mnt/data/script_v7.js"

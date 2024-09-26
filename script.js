@@ -23,6 +23,7 @@ const messageDisplay = document.getElementById('messageDisplay');
 const buySlotButton = document.getElementById('buySlotButton');
 const buyAutoSpinButton = document.getElementById('buyAutoSpinButton');
 const buyLuckUpgradeButton = document.getElementById('buyLuckUpgradeButton');
+const wipeSaveButton = document.getElementById('wipeSaveButton');
 const machineSelect = document.getElementById('machineSelect');
 
 // Outcomes (emojis) and chances
@@ -114,6 +115,20 @@ buyLuckUpgradeButton.addEventListener('click', () => {
   } else {
     messageDisplay.textContent = "Not enough money to buy luck upgrade!";
   }
+});
+
+// Wipe save state button
+wipeSaveButton.addEventListener('click', () => {
+  localStorage.clear(); // Clear all local storage
+  balance = 0;          // Reset balance
+  spinCount = 1;       // Reset spin count
+  machines = [];       // Clear machines array
+  updateBalanceDisplay(); // Update the displayed balance
+
+  // Clear the slot machines from the UI
+  slotMachinesContainer.innerHTML = ''; 
+  machineSelect.innerHTML = ''; // Clear the machine select dropdown
+  messageDisplay.textContent = "Game state wiped!"; // Display a message
 });
 
 // Update the balance display

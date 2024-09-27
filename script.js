@@ -181,7 +181,7 @@ function getPrice(type) {
   }
 }
 
-// Wipe save and reset everything, no machine on reload
+// Wipe save and reset everything, give a starter slot machine after wipe
 wipeSaveButton.addEventListener('click', () => {
   localStorage.clear();  // Clears all saved data
   balance = 0;
@@ -189,9 +189,13 @@ wipeSaveButton.addEventListener('click', () => {
   machines = [];
   slotMachinesContainer.innerHTML = '';  // Clears the display
   machineSelect.innerHTML = '';  // Resets dropdown
-  messageDisplay.textContent = "Save wiped! You need to buy a new slot machine!";
+  messageDisplay.textContent = "Save wiped! You got a new starter slot machine!";
   updateBalanceDisplay();
   updatePrices();
+  
+  // Give a starter slot machine after wiping save
+  createSlotMachine(spinCount);
+  saveState();
 });
 
 // Ensure the first slot machine is created when the page loads

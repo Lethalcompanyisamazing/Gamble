@@ -3,19 +3,21 @@ function saveState() {
   localStorage.setItem('balance', balance);
   localStorage.setItem('spinCount', spinCount);
   localStorage.setItem('machines', JSON.stringify(machines));
+  localStorage.setItem('upgradePrices', JSON.stringify(upgradePrices)); // Save the upgrade prices
 }
 
 function loadState() {
   balance = parseFloat(localStorage.getItem('balance')) || 0;
   spinCount = parseInt(localStorage.getItem('spinCount')) || 1;
   machines = JSON.parse(localStorage.getItem('machines')) || [];
+  upgradePrices = JSON.parse(localStorage.getItem('upgradePrices')) || { slotMachine: 20, autoSpin: 10, luckUpgrade: 50 }; // Load upgrade prices
 }
 
 // Variables
 let balance = 0;
 let spinCount = 1;
 let machines = [];
-let slotMachinePrices = { slot: 20, autoSpin: 10, luckUpgrade: 50 };
+let upgradePrices = { slotMachine: 20, autoSpin: 10, luckUpgrade: 50 }; // Initial prices for upgrades
 
 // HTML Elements
 const balanceDisplay = document.getElementById('balance');
@@ -25,12 +27,13 @@ const buySlotButton = document.getElementById('buySlotButton');
 const buyAutoSpinButton = document.getElementById('buyAutoSpinButton');
 const buyLuckUpgradeButton = document.getElementById('buyLuckUpgradeButton');
 const machineSelect = document.getElementById('machineSelect');
+const wipeSaveButton = document.getElementById('wipeSaveButton'); // Wipe save button
 
 // Outcomes (emojis) and chances
 const outcomes = [
-  { emoji: '🍇', percent: 0.15, chance: 20 },
-  { emoji: '🍒', percent: 0.30, chance: 9 },
-  { emoji: '777', percent: 0.55, chance: 1 }
+  { emoji: '🍇', percentage: 0.15, chance: 20 }, // 20% chance
+  { emoji: '🍒', percentage: 0.30, chance: 9 },  // 9% chance
+  { emoji: '777', percentage: 0.55, chance: 1 }  // 1% chance
 ];
 
 // Function to pick a random outcome based on chance
@@ -44,7 +47,7 @@ function getRandomOutcome() {
     }
     random -= outcome.chance;
   }
-  return null; // Lose case
+  return null;  // Return null for losing
 }
 
 // Create a slot machine
@@ -59,7 +62,7 @@ function createSlotMachine(spinNumber) {
   const spinButton = document.createElement('button');
   spinButton.textContent = `Spin Slot ${spinNumber}`;
   spinButton.addEventListener('click', () => {
-    spinSlot(spinNumber, resultDisplay);
+    spinSlotMachine(resultDisplay);
   });
   
   slotMachineDiv.appendChild(spinButton);
@@ -75,11 +78,11 @@ function createSlotMachine(spinNumber) {
   machines.push({ spinNumber, winnings: 0 });
 }
 
-// Spin a slot machine
-function spinSlot(spinNumber, resultDisplay) {
+// Function to spin a slot machine
+function spinSlotMachine(resultDisplay) {
   const result = getRandomOutcome();
   if (result) {
-    const winnings = balance * result.percent;
+    const winnings = balance * result.percentage;
     balance += winnings;
     resultDisplay.textContent = `${result.emoji} - You won $${winnings.toFixed(2)}!`;
   } else {
@@ -89,15 +92,26 @@ function spinSlot(spinNumber, resultDisplay) {
   saveState();
 }
 
-// Buy a new slot machine
+// Auto-spin logic
+function autoSpin(slotNumber) {
+  setInterval(() => {
+    const slotMachine = machines.find(machine => machine.spinNumber === slotNumber);
+    if (slotMachine) {
+      spinSlotMachine(slotMachine.resultDisplay);  // Spin the chosen machine
+    }
+  }, 5000);
+}
+
+// Buy a new slot machine (initial cost $20)
 buySlotButton.addEventListener('click', () => {
-  if (balance >= slotMachinePrices.slot) {
-    balance -= slotMachinePrices.slot;
-    slotMachinePrices.slot += 10; // Increase price
+  const slotPrice = upgradePrices.slotMachine;
+  if (balance >= slotPrice) {
+    balance -= slotPrice;
     spinCount += 1;
     createSlotMachine(spinCount);
+    upgradePrices.slotMachine += 10;  // Increase the price
+    updateButtonPrices();  // Update button prices
     messageDisplay.textContent = `You bought Slot Machine ${spinCount}!`;
-    updatePrices();
     updateBalanceDisplay();
     saveState();
   } else {
@@ -105,14 +119,16 @@ buySlotButton.addEventListener('click', () => {
   }
 });
 
-// Buy an auto-spin upgrade
+// Buy an auto-spin upgrade (initial cost $10)
 buyAutoSpinButton.addEventListener('click', () => {
-  if (balance >= slotMachinePrices.autoSpin) {
-    balance -= slotMachinePrices.autoSpin;
-    slotMachinePrices.autoSpin += 5; // Increase price
+  const autoSpinPrice = upgradePrices.autoSpin;
+  if (balance >= autoSpinPrice) {
+    balance -= autoSpinPrice;
+    const selectedSlotNumber = parseInt(machineSelect.value);
+    autoSpin(selectedSlotNumber);
+    upgradePrices.autoSpin += 5;  // Increase the price
+    updateButtonPrices();  // Update button prices
     messageDisplay.textContent = "Auto-spin upgrade purchased!";
-    autoSpinSelectedMachine();
-    updatePrices();
     updateBalanceDisplay();
     saveState();
   } else {
@@ -120,57 +136,54 @@ buyAutoSpinButton.addEventListener('click', () => {
   }
 });
 
-// Buy a luck upgrade
+// Buy a luck upgrade (initial cost $50)
 buyLuckUpgradeButton.addEventListener('click', () => {
-  if (balance >= slotMachinePrices.luckUpgrade) {
-    balance -= slotMachinePrices.luckUpgrade;
-    slotMachinePrices.luckUpgrade += 15; // Increase price
+  const luckUpgradePrice = upgradePrices.luckUpgrade;
+  if (balance >= luckUpgradePrice) {
+    balance -= luckUpgradePrice;
+    upgradePrices.luckUpgrade += 25;  // Increase the price
+    updateButtonPrices();  // Update button prices
     messageDisplay.textContent = "Luck upgrade purchased!";
-    updatePrices();
     updateBalanceDisplay();
     saveState();
   } else {
-    messageDisplay.textContent = "Not enough money to buy a luck upgrade!";
+    messageDisplay.textContent = "Not enough money to buy luck upgrade!";
   }
 });
 
-// Update displayed balance
+// Update the button prices
+function updateButtonPrices() {
+  buySlotButton.textContent = `Buy Slot Machine ($${upgradePrices.slotMachine})`;
+  buyAutoSpinButton.textContent = `Buy Auto-Spin ($${upgradePrices.autoSpin})`;
+  buyLuckUpgradeButton.textContent = `Buy Luck Upgrade ($${upgradePrices.luckUpgrade})`;
+}
+
+// Wipe save data
+wipeSaveButton.addEventListener('click', () => {
+  localStorage.clear();  // Wipe save data
+  balance = 0;
+  spinCount = 1;
+  machines = [];
+  slotMachinesContainer.innerHTML = '';  // Clear all slot machines from UI
+  createSlotMachine(1);  // Create starter slot machine
+  updateBalanceDisplay();
+  saveState();
+});
+
+// Update the balance display
 function updateBalanceDisplay() {
   balanceDisplay.textContent = balance.toFixed(2);
 }
 
-// Update prices on buttons
-function updatePrices() {
-  buySlotButton.textContent = `Buy Slot Machine ($${slotMachinePrices.slot})`;
-  buyAutoSpinButton.textContent = `Buy Auto-Spin ($${slotMachinePrices.autoSpin})`;
-  buyLuckUpgradeButton.textContent = `Buy Luck Upgrade ($${slotMachinePrices.luckUpgrade})`;
-}
-
-// Auto-spin function for the selected machine
-function autoSpinSelectedMachine() {
-  const selectedMachine = machineSelect.value;
-  if (selectedMachine) {
-    setInterval(() => {
-      const machine = machines.find(m => m.spinNumber == selectedMachine);
-      if (machine) {
-        const resultDisplay = slotMachinesContainer.children[selectedMachine - 1].querySelector('p');
-        spinSlot(selectedMachine, resultDisplay);
-      }
-    }, 5000); // Spin every 5 seconds
-  }
-}
-
-// Initialize the game
-function initialize() {
-  loadState();
+// Ensure the first slot machine is created when the page loads
+window.addEventListener('load', () => {
+  loadState();  // Load saved state if available
   updateBalanceDisplay();
-  updatePrices();
-
-  // Rebuild existing slot machines from saved state
-  machines.forEach(machine => {
-    createSlotMachine(machine.spinNumber);
-  });
-}
-
-// Start the game
-initialize();
+  
+  if (machines.length === 0) {
+    createSlotMachine(1);  // Create a starter slot machine
+    spinCount = 1;  // Reset spinCount after wipe
+  } else {
+    machines.forEach(machine => createSlotMachine(machine.spinNumber));  // Restore machines from saved state
+  }
+});

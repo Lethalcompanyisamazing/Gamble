@@ -15,6 +15,7 @@ body {
   background-color: white;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
+  display: flex;
 }
 
 /* Header styling */
@@ -72,7 +73,7 @@ p {
 
 /* Upgrade buttons styling */
 #upgradeContainer {
-  margin-bottom: 20px;
+  margin-left: 20px; /* Move upgrades to the side */
 }
 
 #upgradeContainer button {
@@ -111,4 +112,3 @@ select {
 audio {
   display: none;
 }
-

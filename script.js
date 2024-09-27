@@ -26,11 +26,11 @@ const buyLuckUpgradeButton = document.getElementById('buyLuckUpgradeButton');
 const wipeSaveButton = document.getElementById('wipeSaveButton');
 const machineSelect = document.getElementById('machineSelect');
 
-// Outcomes (emojis) and chances
+// Outcomes (emojis) and their percentage winnings
 const outcomes = [
-  { emoji: '🍇', fixed: 10, chance: 20 }, // 20% chance
-  { emoji: '🍒', fixed: 50, chance: 9 },  // 9% chance
-  { emoji: '777', fixed: 100, chance: 1 } // 1% chance
+  { emoji: '🍇', percent: 15, chance: 20 }, // 20% chance to win 15% of balance
+  { emoji: '🍒', percent: 30, chance: 9 },  // 9% chance to win 30% of balance
+  { emoji: '777', percent: 55, chance: 1 }  // 1% chance to win 55% of balance
 ];
 
 // Function to pick a random outcome based on chance
@@ -64,14 +64,14 @@ function createSlotMachine(spinNumber) {
   spinButton.textContent = `Spin Slot ${spinNumber}`;
   spinButton.addEventListener('click', () => {
     if (chanceToLose()) {
-      resultDisplay.textContent = `You LOST!`; // Show losing message without emojis
+      resultDisplay.textContent = `You LOST!`; // Show losing message
       saveState(); // Save the state even if the player loses
       return;
     }
 
     const result = getRandomOutcome();
-    const winnings = result.fixed;
-    balance += winnings;
+    const winnings = (balance * (result.percent / 100)).toFixed(2); // Calculate percentage of current balance
+    balance += parseFloat(winnings); // Add the calculated winnings to the balance
     resultDisplay.textContent = `${result.emoji} - You won $${winnings}!`;
     updateBalanceDisplay();
     saveState();
@@ -132,8 +132,8 @@ buyLuckUpgradeButton.addEventListener('click', () => {
 wipeSaveButton.addEventListener('click', () => {
   localStorage.clear(); // Clear all local storage
   balance = 0;          // Reset balance
-  spinCount = 1;       // Reset spin count
-  machines = [];       // Clear machines array
+  spinCount = 1;        // Reset spin count
+  machines = [];        // Clear machines array
   updateBalanceDisplay(); // Update the displayed balance
 
   // Clear the slot machines from the UI

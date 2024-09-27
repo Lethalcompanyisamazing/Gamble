@@ -25,13 +25,14 @@ const buySlotButton = document.getElementById('buySlotButton');
 const buyAutoSpinButton = document.getElementById('buyAutoSpinButton');
 const buyLuckUpgradeButton = document.getElementById('buyLuckUpgradeButton');
 const machineSelect = document.getElementById('machineSelect');
+const wipeSaveButton = document.getElementById('wipeSaveButton');
 
-// Outcomes (emojis) and chances
+// Outcomes and chances
 const outcomes = [
-  { emoji: '🍇', fixed: 15, chance: 20 }, // 15% of balance
-  { emoji: '🍒', fixed: 30, chance: 9 },  // 30% of balance
-  { emoji: '777', fixed: 55, chance: 1 }, // 55% of balance
-  { emoji: '❌', fixed: 0, chance: 70 }   // Loss (70% chance)
+  { emoji: '🍇', fixed: 10, percentage: 10, chance: 20 },  // 10% or $10
+  { emoji: '🍒', fixed: 50, percentage: 35, chance: 9 },   // 35% or $50
+  { emoji: '777', fixed: 100, percentage: 65, chance: 1 }, // 65% or $100
+  { emoji: '❌', fixed: 0, percentage: 0, chance: 70 }     // Loss
 ];
 
 // Function to pick a random outcome based on chance
@@ -56,7 +57,11 @@ function handleSpin(resultDisplay, slotNumber) {
   if (result.emoji === '❌') {
     resultDisplay.textContent = `Slot ${slotNumber}: You LOST!`;
   } else {
-    winnings = balance > 0 ? balance * (result.fixed / 100) : result.fixed;
+    if (balance === 0) {
+      winnings = result.fixed; // Fixed amount if balance is zero
+    } else {
+      winnings = balance * (result.percentage / 100); // Percent of balance
+    }
     balance += winnings;
     resultDisplay.textContent = `${result.emoji} - You won $${winnings.toFixed(2)}!`;
   }
@@ -107,44 +112,18 @@ buySlotButton.addEventListener('click', () => {
   }
 });
 
-// Buy auto-spin upgrade
-buyAutoSpinButton.addEventListener('click', () => {
-  if (balance >= autoSpinPrices.auto) {
-    balance -= autoSpinPrices.auto;
-    autoSpinPrices.auto += 5; // Increase price
-    messageDisplay.textContent = "Auto-spin upgrade purchased!";
-    updatePrices();
-    updateBalanceDisplay();
-    saveState();
-  } else {
-    messageDisplay.textContent = "Not enough money to buy auto-spin!";
-  }
+// Wipe save and reset everything
+wipeSaveButton.addEventListener('click', () => {
+  localStorage.clear();
+  balance = 0;
+  spinCount = 1;
+  machines = [];
+  slotMachinesContainer.innerHTML = '';
+  machineSelect.innerHTML = '';
+  messageDisplay.textContent = "Save wiped! You need to buy a new slot machine!";
+  updateBalanceDisplay();
+  updatePrices();
 });
-
-// Buy luck upgrade
-buyLuckUpgradeButton.addEventListener('click', () => {
-  if (balance >= autoSpinPrices.luck) {
-    balance -= autoSpinPrices.luck;
-    autoSpinPrices.luck += 10; // Increase price
-    messageDisplay.textContent = "Luck upgrade purchased!";
-    updatePrices();
-    updateBalanceDisplay();
-    saveState();
-  } else {
-    messageDisplay.textContent = "Not enough money to buy luck upgrade!";
-  }
-});
-
-// Auto-spin selected slot machine
-setInterval(() => {
-  const selectedMachineNumber = machineSelect.value;
-  const selectedMachine = machines.find(machine => machine.spinNumber === parseInt(selectedMachineNumber));
-  if (selectedMachine) {
-    const slotMachineDiv = document.querySelector(`.slotMachine:nth-child(${selectedMachineNumber})`);
-    const resultDisplay = slotMachineDiv.querySelector('p');
-    handleSpin(resultDisplay, selectedMachineNumber);
-  }
-}, 5000); // Spins every 5 seconds
 
 // Update balance display
 function updateBalanceDisplay() {
@@ -158,15 +137,13 @@ function updatePrices() {
   buyLuckUpgradeButton.textContent = `Buy Luck Upgrade ($${autoSpinPrices.luck})`;
 }
 
-// Ensure the first slot machine is created when the page loads
+// Ensure the first slot machine is created when the page loads if not wiped
 window.addEventListener('load', () => {
   loadState();
   updateBalanceDisplay();
   updatePrices();
 
-  if (machines.length === 0) {
+  if (machines.length === 0 && balance > 0) {
     createSlotMachine(spinCount);
-  } else {
-    machines.forEach(machine => createSlotMachine(machine.spinNumber));
   }
 });

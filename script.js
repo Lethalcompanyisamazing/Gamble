@@ -3,18 +3,22 @@ function saveState() {
   localStorage.setItem('balance', balance);
   localStorage.setItem('spinCount', spinCount);
   localStorage.setItem('machines', JSON.stringify(machines));
+  localStorage.setItem('luck', luck);
 }
 
 function loadState() {
   balance = parseFloat(localStorage.getItem('balance')) || 0;
   spinCount = parseInt(localStorage.getItem('spinCount')) || 1;
   machines = JSON.parse(localStorage.getItem('machines')) || [];
+  luck = parseInt(localStorage.getItem('luck')) || startingLuck;
 }
 
 // Variables
 let balance = 0;
 let spinCount = 1;
 let machines = [];
+let startingLuck = 100; // Default starting luck
+let luck = startingLuck;
 
 // HTML Elements
 const balanceDisplay = document.getElementById('balance');
@@ -26,18 +30,18 @@ const buyLuckUpgradeButton = document.getElementById('buyLuckUpgradeButton');
 const machineSelect = document.getElementById('machineSelect');
 const wipeSaveButton = document.getElementById('wipeSaveButton');
 
-// Outcomes (emojis) and chances
+// Outcomes and chances (includes chance logic)
 const outcomes = [
   { emoji: '🍇', fixed: 10, chance: 20 }, // 20% chance
   { emoji: '🍒', fixed: 50, chance: 9 },  // 9% chance
   { emoji: '777', fixed: 100, chance: 1 } // 1% chance
 ];
 
-// Function to pick a random outcome based on chance
+// Function to pick a random outcome based on luck
 function getRandomOutcome() {
-  const totalChance = outcomes.reduce((sum, outcome) => sum + outcome.chance, 0);
+  const totalChance = outcomes.reduce((sum, outcome) => sum + outcome.chance, 0) + luck; // Adjusted by luck
   let random = Math.random() * totalChance;
-  
+
   for (let outcome of outcomes) {
     if (random < outcome.chance) {
       return outcome;
@@ -51,23 +55,22 @@ function calculateWinnings(outcome) {
   if (balance === 0) {
     switch (outcome.emoji) {
       case '🍇':
-        return 10;  // Set base for grapes
+        return 10;
       case '🍒':
-        return 50;  // Set base for cherries
+        return 50;
       case '777':
-        return 100;  // Set base for 777
+        return 100;
       default:
         return 0;
     }
   } else {
-    // Return percentage-based winnings if balance is above zero
     switch (outcome.emoji) {
       case '🍇':
-        return balance * 0.10;  // 10% for grapes
+        return balance * 0.10;
       case '🍒':
-        return balance * 0.35;  // 35% for cherries
+        return balance * 0.35;
       case '777':
-        return balance * 0.65;  // 65% for 777
+        return balance * 0.65;
       default:
         return 0;
     }
@@ -103,7 +106,6 @@ function createSlotMachine(spinNumber) {
   option.textContent = `Slot ${spinNumber}`;
   machineSelect.appendChild(option);
 
-  // Save machine info
   machines.push({ spinNumber, winnings: 0 });
 }
 
@@ -123,15 +125,33 @@ buySlotButton.addEventListener('click', () => {
   }
 });
 
-// Buy an auto-spin upgrade (costs $10)
+// Auto-Spin functionality, auto-spins every 5 seconds
+let autoSpinInterval = null;
 buyAutoSpinButton.addEventListener('click', () => {
   const autoSpinCost = getPrice('autoSpin');
+  const selectedMachineIndex = parseInt(machineSelect.value) - 1;
+
   if (balance >= autoSpinCost) {
     balance -= autoSpinCost;
     messageDisplay.textContent = "Auto-spin upgrade purchased!";
     updateBalanceDisplay();
     updatePrices();
     saveState();
+
+    // Clear previous auto-spin if it exists
+    if (autoSpinInterval) {
+      clearInterval(autoSpinInterval);
+    }
+
+    // Auto-spin for the selected slot machine every 5 seconds
+    if (selectedMachineIndex >= 0) {
+      autoSpinInterval = setInterval(() => {
+        const spinButton = document.querySelectorAll('.slotMachine button')[selectedMachineIndex];
+        if (spinButton) {
+          spinButton.click(); // Automatically click the spin button for the selected machine
+        }
+      }, 5000);
+    }
   } else {
     messageDisplay.textContent = "Not enough money to buy auto-spin!";
   }
@@ -142,6 +162,7 @@ buyLuckUpgradeButton.addEventListener('click', () => {
   const luckUpgradeCost = getPrice('luckUpgrade');
   if (balance >= luckUpgradeCost) {
     balance -= luckUpgradeCost;
+    luck += 10; // Increases luck with each upgrade
     messageDisplay.textContent = "Luck upgrade purchased!";
     updateBalanceDisplay();
     updatePrices();
@@ -169,23 +190,24 @@ function getPrice(type) {
   switch (type) {
     case 'slot':
       basePrice = 20;
-      return basePrice + machines.length * 10; // Slot price increases by $10 per machine
+      return basePrice + machines.length * 10;
     case 'autoSpin':
       basePrice = 10;
-      return basePrice + machines.length * 5; // Auto-spin price increases by $5 per machine
+      return basePrice + machines.length * 5;
     case 'luckUpgrade':
       basePrice = 50;
-      return basePrice + machines.length * 15; // Luck upgrade price increases by $15 per machine
+      return basePrice + machines.length * 15;
     default:
       return 0;
   }
 }
 
-// Wipe save and reset everything, give a starter slot machine after wipe
+// Wipe save and reset everything, give a starter slot machine and reset luck
 wipeSaveButton.addEventListener('click', () => {
   localStorage.clear();  // Clears all saved data
   balance = 0;
   spinCount = 1;
+  luck = startingLuck;  // Reset luck
   machines = [];
   slotMachinesContainer.innerHTML = '';  // Clears the display
   machineSelect.innerHTML = '';  // Resets dropdown
@@ -200,7 +222,7 @@ wipeSaveButton.addEventListener('click', () => {
 
 // Ensure the first slot machine is created when the page loads
 window.addEventListener('load', () => {
-  loadState();  // Load saved state if available
+  loadState();
   updateBalanceDisplay();
   updatePrices();
   if (machines.length > 0) {

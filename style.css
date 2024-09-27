@@ -1,114 +1,85 @@
-/* General styling */
 body {
   font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
+  background-color: #f0f0f0;
   margin: 0;
-  padding: 20px;
-  text-align: center;
+  padding: 0;
 }
 
-/* Container for the entire app */
 #app {
   max-width: 800px;
-  margin: 0 auto;
+  margin: 20px auto;
   padding: 20px;
-  background-color: white;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
   border-radius: 8px;
-  display: flex;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Header styling */
 h1 {
-  color: #333;
-  margin-bottom: 20px;
-}
-
-/* Balance display */
-p {
-  font-size: 18px;
-  margin-bottom: 20px;
-}
-
-/* Slot machines container */
-#slotMachinesContainer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-/* Slot machine styling */
-.slotMachine {
-  background-color: #e0e0e0;
-  border-radius: 8px;
-  padding: 15px;
-  width: 180px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
 
-/* Result text */
-.slotMachine p {
-  font-size: 16px;
-  margin-bottom: 10px;
+#balance {
+  font-weight: bold;
 }
 
-/* Spin button */
-.slotMachine button {
+#slotMachinesContainer {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.slotMachine {
   padding: 10px;
-  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fafafa;
+  text-align: center;
+}
+
+.slotMachine button {
+  margin-top: 10px;
+  padding: 5px 10px;
+  font-size: 16px;
+  border: none;
   background-color: #4CAF50;
   color: white;
-  border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
 .slotMachine button:hover {
   background-color: #45a049;
 }
 
-/* Upgrade buttons styling */
 #upgradeContainer {
-  margin-left: 20px; /* Move upgrades to the side */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 #upgradeContainer button {
-  padding: 10px 20px;
-  margin: 10px;
-  font-size: 14px;
-  background-color: #2196F3;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #007BFF;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
 #upgradeContainer button:hover {
-  background-color: #1e88e5;
+  background-color: #0056b3;
 }
 
-/* Dropdown for selecting slot machine for auto-spin */
-select {
-  padding: 10px;
-  font-size: 14px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+#machineSelect {
+  margin-top: 10px;
+  padding: 5px;
 }
 
-/* Message display */
 #messageDisplay {
-  font-size: 16px;
+  margin-top: 15px;
+  font-weight: bold;
   color: #333;
-  margin-top: 20px;
-  min-height: 24px; /* To maintain space even if there's no message */
-}
-
-/* Ensure audio controls are hidden */
-audio {
-  display: none;
 }

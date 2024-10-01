@@ -32,9 +32,10 @@ const wipeSaveButton = document.getElementById('wipeSaveButton');
 
 // Outcomes and chances (includes chance logic)
 const outcomes = [
-  { emoji: '🍇', fixed: 10, chance: 20 }, // 20% chance
-  { emoji: '🍒', fixed: 50, chance: 9 },  // 9% chance
-  { emoji: '777', fixed: 100, chance: 1 } // 1% chance
+  { emoji: '🍇', fixed: 10, chance: 20 }, // 20% chance to win
+  { emoji: '🍒', fixed: 50, chance: 9 },  // 9% chance to win
+  { emoji: '777', fixed: 100, chance: 1 }, // 1% chance to win
+  { emoji: 'LOSE', fixed: 0, chance: 70 }  // 70% chance to lose
 ];
 
 // Function to pick a random outcome based on luck
@@ -52,6 +53,9 @@ function getRandomOutcome() {
 
 // Calculate winnings based on balance
 function calculateWinnings(outcome) {
+  if (outcome.emoji === 'LOSE') {
+    return 0; // No winnings for losing
+  }
   if (balance === 0) {
     switch (outcome.emoji) {
       case '🍇':
@@ -91,8 +95,12 @@ function createSlotMachine(spinNumber) {
   spinButton.addEventListener('click', () => {
     const result = getRandomOutcome();
     const winnings = calculateWinnings(result);
-    balance += winnings;
-    resultDisplay.textContent = winnings > 0 ? `${result.emoji} - You won $${winnings.toFixed(2)}!` : `You LOST!`;
+    if (winnings === 0) {
+      resultDisplay.textContent = "You LOST!";
+    } else {
+      balance += winnings;
+      resultDisplay.textContent = `${result.emoji} - You won $${winnings.toFixed(2)}!`;
+    }
     updateBalanceDisplay();
     saveState();
   });

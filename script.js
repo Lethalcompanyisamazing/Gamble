@@ -215,7 +215,7 @@ wipeSaveButton.addEventListener('click', () => {
   localStorage.clear();  // Clears all saved data
   balance = 0;
   spinCount = 1;
-  luck = startingLuck;  // Reset luck
+  luck = startingLuck;  // Reset luck to the starting value
   machines = [];
   slotMachinesContainer.innerHTML = '';  // Clears the display
   machineSelect.innerHTML = '';  // Resets dropdown

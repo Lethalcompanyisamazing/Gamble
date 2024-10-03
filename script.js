@@ -1,7 +1,7 @@
 // Variables for base prices and starting luck
-const baseSlotPrice = 20;
-const baseAutoSpinPrice = 10;
-const baseLuckUpgradePrice = 50;
+const baseSlotPrice = 20.00;
+const baseAutoSpinPrice = 10.00;
+const baseLuckUpgradePrice = 50.00;
 let startingLuck = 1; // Starting luck value
 
 // Variables for tracking current prices and upgrades

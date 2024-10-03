@@ -1,85 +1,66 @@
+/* General styling */
 body {
   font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
+  background-color: #f4f4f4;
   margin: 0;
-  padding: 0;
-}
-
-#app {
-  max-width: 800px;
-  margin: 20px auto;
   padding: 20px;
-  background-color: #ffffff;
+  text-align: center;
+}
+
+/* Container for the entire app */
+#app {
+  max-width: 1000px; /* Increased the width */
+  margin: 0 auto;
+  padding: 20px;
+  background-color: white;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
-  text-align: center;
+/* Balance and buttons */
+p {
+  font-size: 18px;
+  margin-bottom: 20px;
 }
 
-#balance {
-  font-weight: bold;
-}
-
+/* Slot machines container */
 #slotMachinesContainer {
-  margin-top: 20px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 15px;
+  margin-bottom: 20px;
 }
 
+/* Slot machine styling */
 .slotMachine {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #fafafa;
+  background-color: #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  width: 200px; /* Increase size of slot machines */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
 
-.slotMachine button {
-  margin-top: 10px;
-  padding: 5px 10px;
-  font-size: 16px;
-  border: none;
-  background-color: #4CAF50;
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.slotMachine button:hover {
-  background-color: #45a049;
-}
-
+/* Upgrade buttons styling */
 #upgradeContainer {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 #upgradeContainer button {
-  padding: 10px;
+  padding: 15px;
+  margin: 10px;
   font-size: 16px;
-  background-color: #007BFF;
+  background-color: #2196F3;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 #upgradeContainer button:hover {
-  background-color: #0056b3;
-}
-
-#machineSelect {
-  margin-top: 10px;
-  padding: 5px;
-}
-
-#messageDisplay {
-  margin-top: 15px;
-  font-weight: bold;
-  color: #333;
+  background-color: #1e88e5;
 }

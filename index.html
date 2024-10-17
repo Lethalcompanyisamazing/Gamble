@@ -1,40 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Slot Machine Game</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div id="app">
-    <h1>Slot Machine Game</h1>
-    <p>Balance: $<span id="balance">0</span></p>
+<div id="app">
+  <h1>Slot Machine Game</h1>
+  <p>Balance: $<span id="balance">0</span></p>
 
-    <!-- Slot machines container -->
-    <div id="slotMachinesContainer"></div>
+  <!-- Slot machines container -->
+  <div id="slotMachinesContainer"></div>
 
-    <!-- Upgrade Buttons -->
-    <div id="upgradeContainer">
-      <button id="buySlotButton">Buy Slot Machine ($20.00)</button>
-      <button id="buyAutoSpinButton">Buy Auto-Spin ($10.00)</button>
-      <button id="buyLuckUpgradeButton">Buy Luck Upgrade ($50.00)</button>
-    </div>
-
-    <!-- Select Slot Machine for Auto-Spin -->
-    <div>
-      <label for="machineSelect">Select Slot Machine for Auto-Spin: </label>
-      <select id="machineSelect"></select>
-    </div>
-
-    <p id="messageDisplay"></p> <!-- Display game messages here -->
-
-    <!-- Background Music -->
-    <audio id="backgroundMusic" src="https://yourdomain.com/background-music.mp3" loop></audio>
-    <button id="playMusic">Play Music</button>
-    <button id="pauseMusic">Pause Music</button>
+  <!-- Upgrade Buttons -->
+  <div id="upgradeContainer">
+    <button id="buySlotButton">Buy Slot Machine ($20)</button>
+    <button id="buyAutoSpinButton">Buy Auto-Spin ($10)</button>
+    <button id="buyLuckUpgradeButton">Buy Luck Upgrade ($50)</button>
   </div>
 
-  <script src="script.js"></script>
-</body>
-</html>
+  <!-- Select Slot Machine for Auto-Spin -->
+  <div>
+    <label for="machineSelect">Select Slot Machine for Auto-Spin: </label>
+    <select id="machineSelect"></select>
+  </div>
+
+  <!-- Wipe Save Button -->
+  <button id="wipeSaveButton">Wipe Save</button>
+
+  <p id="messageDisplay"></p> <!-- Display game messages here -->
+
+  <!-- Arrow for New Game -->
+  <div id="arrowContainer">
+    <button id="newGameArrow">➤</button>
+  </div>
+
+  <!-- Background Music -->
+  <audio id="backgroundMusic" src="https://lethalcompanyisamazing.github.io/slot-machine-game/background-music.mp3" loop></audio>
+</div>

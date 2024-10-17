@@ -9,18 +9,12 @@ body {
 
 /* Container for the entire app */
 #app {
-  max-width: 1000px; /* Increased the width */
+  max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
   background-color: white;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-}
-
-/* Balance and buttons */
-p {
-  font-size: 18px;
-  margin-bottom: 20px;
 }
 
 /* Slot machines container */
@@ -37,12 +31,12 @@ p {
   background-color: #e0e0e0;
   border-radius: 8px;
   padding: 20px;
-  width: 200px; /* Increase size of slot machines */
+  width: 200px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
 
-/* Upgrade buttons styling */
+/* Upgrade buttons */
 #upgradeContainer {
   display: flex;
   flex-direction: column;
@@ -65,12 +59,13 @@ p {
   background-color: #1e88e5;
 }
 
-/* New game arrow */
+/* Arrow for new game */
 #arrowContainer {
   position: fixed;
   top: 50%;
   right: 0;
   transform: translateY(-50%);
+  z-index: 1000;
 }
 
 #newGameArrow {
@@ -86,4 +81,20 @@ p {
 
 #newGameArrow:hover {
   background-color: #1e88e5;
+}
+
+/* Wipe Save Button */
+#wipeSaveButton {
+  padding: 15px;
+  margin: 20px;
+  font-size: 16px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#wipeSaveButton:hover {
+  background-color: darkred;
 }

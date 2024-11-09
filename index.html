@@ -3,37 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Game Hub</title>
+  <title>Slot Machine and Blackjack Game</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Switch Game Button -->
-  <button id="switchButton">Switch Game</button>
-
-  <!-- Slot Machine Game -->
-  <div id="slotMachineContainer">
-    <h1>Slot Machine Game</h1>
-    <p>Balance: $<span id="balance">0</span></p>
-    <div id="slotMachinesContainer"></div>
-    <div id="upgradeContainer">
+  <div id="app">
+    <h1>Games</h1>
+    <p>Balance: $<span id="balance">100</span></p>
+    
+    <!-- Game Switch Button -->
+    <button id="switchGameButton">Switch Game</button>
+    
+    <!-- Slot Machine Section -->
+    <div id="slotMachineGame">
+      <h2>Slot Machine</h2>
       <button id="buySlotButton">Buy Slot Machine ($20)</button>
       <button id="buyAutoSpinButton">Buy Auto-Spin ($10)</button>
       <button id="buyLuckUpgradeButton">Buy Luck Upgrade ($50)</button>
+      <button id="wipeSaveButton">Wipe Save</button>
+      <div id="slotMachinesContainer"></div>
     </div>
-    <label for="machineSelect">Auto-Spin Slot Machine: </label>
-    <select id="machineSelect"></select>
-    <p id="messageDisplay"></p>
-    <audio id="backgroundMusic" src="background-music.mp3" loop></audio>
-  </div>
 
-  <!-- Blackjack Game -->
-  <div id="blackjackContainer" style="display: none;">
-    <h1>Blackjack Game</h1>
-    <p>Balance: $<span id="blackjackBalance">0</span></p>
-    <div id="playerHand"></div>
-    <button id="hitButton">Hit</button>
-    <button id="stayButton">Stay</button>
-    <p id="resultDisplay"></p>
+    <!-- Blackjack Section -->
+    <div id="blackjackGame" style="display: none;">
+      <h2>Blackjack</h2>
+      <div id="playerHand">Player Hand:</div>
+      <div id="aiHand">AI Hand: ?</div>
+      <button id="hitButton">Hit</button>
+      <button id="stayButton">Stay</button>
+      <p id="resultDisplay"></p>
+    </div>
+
+    <!-- Background Music -->
+    <audio id="backgroundMusic" src="background-music.mp3" loop></audio>
   </div>
 
   <script src="script.js"></script>

@@ -3,33 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Game Hub</title>
+  <title>Slot Machine Game</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="app">
-    <h1 id="gameTitle">Slot Machine Game</h1>
-    <div id="slotMachineContainer">
-      <!-- Slot Machine Game Content Here -->
-      <p>Balance: $<span id="balance">0</span></p>
-      <div id="slotMachinesContainer"></div>
-      <button id="wipeSaveButton">Wipe Save</button>
+    <h1>Slot Machine Game</h1>
+    <p>Balance: $<span id="balance">0</span></p>
+
+    <!-- Slot machines container -->
+    <div id="slotMachinesContainer">
+      <!-- Slot machines and buttons here -->
     </div>
-    
-    <div id="blackjackContainer" style="display: none;">
-      <!-- Blackjack Game Content Here -->
+
+    <!-- Blackjack Game -->
+    <div id="blackjackContainer" style="display:none;">
       <h2>Blackjack Game</h2>
-      <p>Player Hand: <span id="playerHand"></span></p>
-      <p>AI Hand: <span id="aiHand"></span></p>
+      <p>Your Cards: <span id="playerHand"></span></p>
       <p>Player Total: <span id="playerTotal"></span></p>
+      <p>AI's Cards: <span id="aiHand"></span></p>
       <p>AI Total: <span id="aiTotal"></span></p>
       <button id="hitButton">Hit</button>
       <button id="stayButton">Stay</button>
-      <button id="betButton">Place Bet</button>
-      <p id="blackjackResult"></p>
     </div>
-    
-    <button id="switchGameButton">Switch Game</button>
+
+    <!-- Switch Game Button -->
+    <button id="switchGameButton">Switch to Blackjack</button>
+
   </div>
 
   <script src="script.js"></script>

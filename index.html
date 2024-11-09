@@ -3,32 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Slot Machine and Blackjack Game</title>
+  <title>Slot Machine Game</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="app">
     <h1>Slot Machine Game</h1>
-    <p>Balance: $<span id="balance">0</span></p>
-    <button id="wipeSaveButton">Wipe Save</button>
+    <p>Balance: $<span id="balance">100</span></p>
     <div id="slotMachinesContainer"></div>
     <div id="upgradeContainer">
       <button id="buySlotButton">Buy Slot Machine ($20.00)</button>
       <button id="buyAutoSpinButton">Buy Auto-Spin ($10.00)</button>
       <button id="buyLuckUpgradeButton">Buy Luck Upgrade ($50.00)</button>
+      <button id="wipeSaveButton">Wipe Save</button>
     </div>
-    <div id="blackjackGame" style="display:none;">
-      <h2>Blackjack</h2>
-      <p>Player's Hand: <span id="playerHand"></span> | Total: <span id="playerScore">0</span></p>
-      <p>Dealer's Hand: <span id="dealerHand"></span> | Total: <span id="dealerScore">0</span></p>
-      <p>Bet: $<input type="number" id="betAmount" min="1" value="10"></p>
-      <button id="hitButton">Hit</button>
-      <button id="stayButton">Stay</button>
-      <p id="blackjackMessage"></p>
-      <button id="newGameButton">New Game</button>
-    </div>
-    <button id="gameToggleArrow">→</button>
+    <audio id="backgroundMusic" src="background-music.mp3" loop></audio>
   </div>
+
+  <!-- Blackjack Game Section (Initially Hidden) -->
+  <div id="blackjackGame" style="display: none;">
+    <h1>Blackjack Game</h1>
+    <p id="blackjackMessage">Welcome to Blackjack! Place your bet to begin.</p>
+    <button id="hitButton">Hit</button>
+    <button id="stayButton">Stay</button>
+    <button id="placeBetButton">Place Bet</button>
+  </div>
+
+  <!-- Game Toggle Button -->
+  <button id="gameToggleArrow">Switch Game</button>
+
   <script src="script.js"></script>
 </body>
 </html>

@@ -12,7 +12,7 @@
     <p>Balance: $<span id="balance">100</span></p>
     
     <!-- Game Switch Button -->
-    <button id="switchGameButton">Switch Game</button>
+    <button id="switchGameButton">Switch to Blackjack</button>
     
     <!-- Slot Machine Section -->
     <div id="slotMachineGame">
@@ -27,8 +27,11 @@
     <!-- Blackjack Section -->
     <div id="blackjackGame" style="display: none;">
       <h2>Blackjack</h2>
+      <p>Balance: $<span id="balance">100</span></p>
+      <p id="betDisplay">Current Bet: $0</p>
       <div id="playerHand">Player Hand:</div>
       <div id="aiHand">AI Hand: ?</div>
+      <button id="betButton">Bet</button>
       <button id="hitButton">Hit</button>
       <button id="stayButton">Stay</button>
       <p id="resultDisplay"></p>

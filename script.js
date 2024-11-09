@@ -1,121 +1,118 @@
-// Initialize balance, slot machine cost, auto-spin, and luck
-let balance = parseFloat(localStorage.getItem("balance")) || 100;
-let slotMachineCost = 20.0;
-let autoSpinCost = 10.0;
-let luckUpgradeCost = 50.0;
-let luckLevel = parseFloat(localStorage.getItem("luck")) || 1;
-let autoSpinEnabled = false;
+let balance = 100;
+let currentGame = "slotMachine";
 
-// DOM Elements
-const balanceDisplay = document.getElementById("balance");
-const buySlotButton = document.getElementById("buySlotButton");
-const buyAutoSpinButton = document.getElementById("buyAutoSpinButton");
-const buyLuckUpgradeButton = document.getElementById("buyLuckUpgradeButton");
-const wipeSaveButton = document.getElementById("wipeSaveButton");
-const gameToggleArrow = document.getElementById("gameToggleArrow");
-const slotMachineGame = document.getElementById("app");
-const blackjackGame = document.getElementById("blackjackGame");
-const messageDisplay = document.getElementById("messageDisplay");
+// Elements
+const slotMachineContainer = document.getElementById('slotMachineContainer');
+const blackjackContainer = document.getElementById('blackjackContainer');
+const switchGameButton = document.getElementById('switchGameButton');
+const balanceDisplay = document.getElementById('balance');
+const playerHandEl = document.getElementById('playerHand');
+const aiHandEl = document.getElementById('aiHand');
+const playerTotalEl = document.getElementById('playerTotal');
+const aiTotalEl = document.getElementById('aiTotal');
+const blackjackResultEl = document.getElementById('blackjackResult');
 
-// Update balance display
-function updateBalanceDisplay() {
+// Blackjack Logic
+let playerHand = [];
+let aiHand = [];
+let betAmount = 0;
+
+function getCardValue(card) {
+  if (["J", "Q", "K"].includes(card)) return 10;
+  if (card === "A") return 11; // Adjust ace later if necessary
+  return parseInt(card);
+}
+
+function calculateHandValue(hand) {
+  let total = hand.reduce((sum, card) => sum + getCardValue(card), 0);
+  if (total > 21 && hand.includes("A")) total -= 10; // Convert Ace from 11 to 1 if over 21
+  return total;
+}
+
+function generateCard() {
+  const cards = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+  return cards[Math.floor(Math.random() * cards.length)];
+}
+
+function resetHands() {
+  playerHand = [generateCard(), generateCard()];
+  aiHand = [generateCard(), generateCard()];
+  updateBlackjackDisplay();
+}
+
+function updateBlackjackDisplay() {
+  playerHandEl.textContent = playerHand.join(", ");
+  aiHandEl.textContent = aiHand.join(", ");
+  playerTotalEl.textContent = calculateHandValue(playerHand);
+  aiTotalEl.textContent = calculateHandValue(aiHand);
+}
+
+function hit() {
+  playerHand.push(generateCard());
+  updateBlackjackDisplay();
+  checkForBust();
+}
+
+function stay() {
+  let aiTotal = calculateHandValue(aiHand);
+  while (aiTotal < 17) {
+    aiHand.push(generateCard());
+    aiTotal = calculateHandValue(aiHand);
+  }
+  updateBlackjackDisplay();
+  determineWinner();
+}
+
+function checkForBust() {
+  if (calculateHandValue(playerHand) > 21) {
+    blackjackResultEl.textContent = "You busted! AI wins.";
+    balance -= betAmount;
+    updateBalance();
+  }
+}
+
+function determineWinner() {
+  const playerTotal = calculateHandValue(playerHand);
+  const aiTotal = calculateHandValue(aiHand);
+  if (playerTotal > 21) {
+    blackjackResultEl.textContent = "You busted! AI wins.";
+  } else if (aiTotal > 21 || playerTotal > aiTotal) {
+    blackjackResultEl.textContent = "You win!";
+    balance += betAmount * 2;
+  } else if (aiTotal === playerTotal) {
+    blackjackResultEl.textContent = "It's a tie!";
+  } else {
+    blackjackResultEl.textContent = "AI wins.";
+    balance -= betAmount;
+  }
+  updateBalance();
+}
+
+function placeBet() {
+  betAmount = 10; // Example fixed bet
+  resetHands();
+  blackjackResultEl.textContent = "";
+}
+
+// Game Switching
+switchGameButton.addEventListener('click', () => {
+  if (currentGame === "slotMachine") {
+    slotMachineContainer.style.display = "none";
+    blackjackContainer.style.display = "block";
+    currentGame = "blackjack";
+  } else {
+    slotMachineContainer.style.display = "block";
+    blackjackContainer.style.display = "none";
+    currentGame = "slotMachine";
+  }
+});
+
+function updateBalance() {
   balanceDisplay.textContent = balance.toFixed(2);
 }
 
-// Buying Functions
-buySlotButton.addEventListener("click", () => {
-  if (balance >= slotMachineCost) {
-    balance -= slotMachineCost;
-    slotMachineCost *= 1.2;
-    buySlotButton.textContent = `Buy Slot Machine ($${slotMachineCost.toFixed(2)})`;
-    // Add new slot machine logic
-    updateBalanceDisplay();
-  }
-});
-
-buyAutoSpinButton.addEventListener("click", () => {
-  if (balance >= autoSpinCost) {
-    balance -= autoSpinCost;
-    autoSpinEnabled = true;
-    autoSpinCost *= 1.5;
-    buyAutoSpinButton.textContent = `Buy Auto-Spin ($${autoSpinCost.toFixed(2)})`;
-    updateBalanceDisplay();
-  }
-});
-
-buyLuckUpgradeButton.addEventListener("click", () => {
-  if (balance >= luckUpgradeCost) {
-    balance -= luckUpgradeCost;
-    luckLevel *= 1.1;
-    luckUpgradeCost *= 2;
-    buyLuckUpgradeButton.textContent = `Buy Luck Upgrade ($${luckUpgradeCost.toFixed(2)})`;
-    updateBalanceDisplay();
-  }
-});
-
-// Slot Machine Spin
-function spinSlotMachine() {
-  const result = Math.random();
-  let winnings = 0;
-
-  if (result < 0.5) {
-    messageDisplay.textContent = "You LOST!";
-  } else if (result < 0.75) {
-    winnings = balance > 0 ? balance * 0.1 : 10;
-    balance += winnings;
-    messageDisplay.textContent = `You WON $${winnings.toFixed(2)}!`;
-  } else if (result < 0.95) {
-    winnings = balance > 0 ? balance * 0.35 : 50;
-    balance += winnings;
-    messageDisplay.textContent = `You WON $${winnings.toFixed(2)}!`;
-  } else {
-    winnings = balance > 0 ? balance * 0.65 : 100;
-    balance += winnings;
-    messageDisplay.textContent = `Jackpot! You WON $${winnings.toFixed(2)}!`;
-  }
-  updateBalanceDisplay();
-}
-
-// Auto-Spin Logic
-function autoSpin() {
-  if (autoSpinEnabled) {
-    setInterval(spinSlotMachine, 5000);
-  }
-}
-
-// Wipe Save
-wipeSaveButton.addEventListener("click", () => {
-  balance = 100;
-  slotMachineCost = 20.0;
-  autoSpinCost = 10.0;
-  luckUpgradeCost = 50.0;
-  luckLevel = 1;
-  autoSpinEnabled = false;
-  updateBalanceDisplay();
-  buySlotButton.textContent = "Buy Slot Machine ($20.00)";
-  buyAutoSpinButton.textContent = "Buy Auto-Spin ($10.00)";
-  buyLuckUpgradeButton.textContent = "Buy Luck Upgrade ($50.00)";
-  messageDisplay.textContent = "Save Wiped. Starting Fresh!";
-});
-
-// Game Toggle
-gameToggleArrow.addEventListener("click", () => {
-  if (blackjackGame.style.display === "none") {
-    slotMachineGame.style.display = "none";
-    blackjackGame.style.display = "block";
-    startBlackjack();
-  } else {
-    blackjackGame.style.display = "none";
-    slotMachineGame.style.display = "block";
-  }
-});
-
-// Blackjack Game Setup
-function startBlackjack() {
-  console.log("Blackjack game started.");
-  // Implement blackjack game logic here
-}
-
-// Initial Setup
-updateBalanceDisplay();
-autoSpin();
+// Initialize
+updateBalance();
+document.getElementById('hitButton').addEventListener('click', hit);
+document.getElementById('stayButton').addEventListener('click', stay);
+document.getElementById('betButton').addEventListener('click', placeBet);

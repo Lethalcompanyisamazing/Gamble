@@ -1,59 +1,73 @@
+// Slot Machine Game Variables
 let balance = 100;
 let currentGame = "slotMachine";
+let slotMachinePrices = { slotMachine: 20, autoSpin: 10, luckUpgrade: 50 };
 
-// Elements
-const slotMachineContainer = document.getElementById('slotMachineContainer');
-const blackjackContainer = document.getElementById('blackjackContainer');
-const switchGameButton = document.getElementById('switchGameButton');
-const balanceDisplay = document.getElementById('balance');
-const playerHandEl = document.getElementById('playerHand');
-const aiHandEl = document.getElementById('aiHand');
-const playerTotalEl = document.getElementById('playerTotal');
-const aiTotalEl = document.getElementById('aiTotal');
-const blackjackResultEl = document.getElementById('blackjackResult');
-
-// Blackjack Logic
+// Blackjack Variables
 let playerHand = [];
 let aiHand = [];
-let betAmount = 0;
+const suits = ["♠", "♣", "♥", "♦"];
+const values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
 
-function getCardValue(card) {
-  if (["J", "Q", "K"].includes(card)) return 10;
-  if (card === "A") return 11; // Adjust ace later if necessary
-  return parseInt(card);
+// HTML Elements
+const balanceDisplay = document.getElementById("balance");
+const slotMachinesContainer = document.getElementById("slotMachinesContainer");
+const switchGameButton = document.getElementById("switchGameButton");
+const playerHandEl = document.getElementById("playerHand");
+const aiHandEl = document.getElementById("aiHand");
+const playerTotalEl = document.getElementById("playerTotal");
+const aiTotalEl = document.getElementById("aiTotal");
+
+// Blackjack Functions
+function generateCard() {
+  const suit = suits[Math.floor(Math.random() * suits.length)];
+  const value = values[Math.floor(Math.random() * values.length)];
+  return `${value}${suit}`;
 }
 
 function calculateHandValue(hand) {
-  let total = hand.reduce((sum, card) => sum + getCardValue(card), 0);
-  if (total > 21 && hand.includes("A")) total -= 10; // Convert Ace from 11 to 1 if over 21
-  return total;
-}
+  let value = 0;
+  let aces = 0;
+  hand.forEach(card => {
+    const cardValue = card.slice(0, -1); // Get value part of the card
+    if (["J", "Q", "K"].includes(cardValue)) value += 10;
+    else if (cardValue === "A") {
+      aces += 1;
+      value += 11;
+    } else value += parseInt(cardValue);
+  });
 
-function generateCard() {
-  const cards = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
-  return cards[Math.floor(Math.random() * cards.length)];
+  // Adjust for Aces
+  while (value > 21 && aces > 0) {
+    value -= 10;
+    aces -= 1;
+  }
+  return value;
 }
 
 function resetHands() {
   playerHand = [generateCard(), generateCard()];
-  aiHand = [generateCard(), generateCard()];
+  aiHand = [generateCard(), "Hidden"]; // Hide the AI's second card initially
   updateBlackjackDisplay();
 }
 
 function updateBlackjackDisplay() {
   playerHandEl.textContent = playerHand.join(", ");
-  aiHandEl.textContent = aiHand.join(", ");
+  aiHandEl.textContent = aiHand[0] + ", " + (aiHand[1] === "Hidden" ? "?" : aiHand[1]);
   playerTotalEl.textContent = calculateHandValue(playerHand);
-  aiTotalEl.textContent = calculateHandValue(aiHand);
+  aiTotalEl.textContent = aiHand.includes("Hidden") ? "?" : calculateHandValue(aiHand);
 }
 
 function hit() {
   playerHand.push(generateCard());
   updateBlackjackDisplay();
-  checkForBust();
+  if (calculateHandValue(playerHand) > 21) {
+    endGame("You bust! You lose.");
+  }
 }
 
 function stay() {
+  aiHand[1] = generateCard(); // Reveal AI's hidden card
   let aiTotal = calculateHandValue(aiHand);
   while (aiTotal < 17) {
     aiHand.push(generateCard());
@@ -63,56 +77,39 @@ function stay() {
   determineWinner();
 }
 
-function checkForBust() {
-  if (calculateHandValue(playerHand) > 21) {
-    blackjackResultEl.textContent = "You busted! AI wins.";
-    balance -= betAmount;
-    updateBalance();
-  }
-}
-
 function determineWinner() {
   const playerTotal = calculateHandValue(playerHand);
   const aiTotal = calculateHandValue(aiHand);
-  if (playerTotal > 21) {
-    blackjackResultEl.textContent = "You busted! AI wins.";
-  } else if (aiTotal > 21 || playerTotal > aiTotal) {
-    blackjackResultEl.textContent = "You win!";
-    balance += betAmount * 2;
-  } else if (aiTotal === playerTotal) {
-    blackjackResultEl.textContent = "It's a tie!";
-  } else {
-    blackjackResultEl.textContent = "AI wins.";
-    balance -= betAmount;
-  }
-  updateBalance();
+
+  if (aiTotal > 21 || playerTotal > aiTotal) endGame("You win!");
+  else if (playerTotal === aiTotal) endGame("It's a tie!");
+  else endGame("You lose.");
 }
 
-function placeBet() {
-  betAmount = 10; // Example fixed bet
+function endGame(message) {
+  alert(message);
   resetHands();
-  blackjackResultEl.textContent = "";
 }
 
-// Game Switching
-switchGameButton.addEventListener('click', () => {
+// Game Switch
+function switchGame() {
   if (currentGame === "slotMachine") {
-    slotMachineContainer.style.display = "none";
-    blackjackContainer.style.display = "block";
+    slotMachinesContainer.style.display = "none";
+    document.getElementById("blackjackContainer").style.display = "block";
+    resetHands();
     currentGame = "blackjack";
   } else {
-    slotMachineContainer.style.display = "block";
-    blackjackContainer.style.display = "none";
+    slotMachinesContainer.style.display = "flex";
+    document.getElementById("blackjackContainer").style.display = "none";
     currentGame = "slotMachine";
   }
-});
-
-function updateBalance() {
-  balanceDisplay.textContent = balance.toFixed(2);
 }
 
-// Initialize
-updateBalance();
-document.getElementById('hitButton').addEventListener('click', hit);
-document.getElementById('stayButton').addEventListener('click', stay);
-document.getElementById('betButton').addEventListener('click', placeBet);
+// Event Listeners
+switchGameButton.addEventListener("click", switchGame);
+document.getElementById("hitButton").addEventListener("click", hit);
+document.getElementById("stayButton").addEventListener("click", stay);
+
+// Initialize balance and display
+balanceDisplay.textContent = balance.toFixed(2);
+resetHands();

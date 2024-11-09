@@ -1,100 +1,37 @@
-/* General styling */
 body {
   font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
-  margin: 0;
-  padding: 20px;
   text-align: center;
 }
 
-/* Container for the entire app */
 #app {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: white;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  width: 600px;
+  margin: auto;
 }
 
-/* Slot machines container */
-#slotMachinesContainer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-/* Slot machine styling */
-.slotMachine {
-  background-color: #e0e0e0;
-  border-radius: 8px;
-  padding: 20px;
-  width: 200px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-/* Upgrade buttons */
-#upgradeContainer {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
-}
-
-#upgradeContainer button {
-  padding: 15px;
-  margin: 10px;
-  font-size: 16px;
-  background-color: #2196F3;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-#upgradeContainer button:hover {
-  background-color: #1e88e5;
-}
-
-/* Arrow for new game */
-#arrowContainer {
+#switchGameButton {
   position: fixed;
-  top: 50%;
-  right: 0;
-  transform: translateY(-50%);
-  z-index: 1000;
-}
-
-#newGameArrow {
-  background-color: #2196F3;
-  color: white;
-  border: none;
-  padding: 20px;
-  font-size: 24px;
-  cursor: pointer;
-  border-radius: 50%;
-  transition: background-color 0.3s;
-}
-
-#newGameArrow:hover {
-  background-color: #1e88e5;
-}
-
-/* Wipe Save Button */
-#wipeSaveButton {
-  padding: 15px;
-  margin: 20px;
+  right: 20px;
+  top: 20px;
+  padding: 10px 20px;
   font-size: 16px;
-  background-color: red;
+  background-color: #3498db;
   color: white;
   border: none;
-  border-radius: 5px;
   cursor: pointer;
+  border-radius: 5px;
 }
 
-#wipeSaveButton:hover {
-  background-color: darkred;
+#blackjackContainer, #slotMachineContainer {
+  margin-top: 20px;
+  display: none;
+}
+
+#slotMachineContainer.active, #blackjackContainer.active {
+  display: block;
+}
+
+button {
+  padding: 10px;
+  margin: 5px;
+  font-size: 16px;
 }

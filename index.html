@@ -3,44 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Slot Machine Game</title>
+  <title>Slot Machine and Blackjack Game</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="app">
     <h1>Slot Machine Game</h1>
     <p>Balance: $<span id="balance">0</span></p>
-
-    <!-- Slot machines container -->
+    <button id="wipeSaveButton">Wipe Save</button>
     <div id="slotMachinesContainer"></div>
-
-    <!-- Upgrade Buttons -->
     <div id="upgradeContainer">
       <button id="buySlotButton">Buy Slot Machine ($20.00)</button>
       <button id="buyAutoSpinButton">Buy Auto-Spin ($10.00)</button>
       <button id="buyLuckUpgradeButton">Buy Luck Upgrade ($50.00)</button>
     </div>
-
-    <!-- Wipe Save -->
-    <button id="wipeSaveButton">Wipe Save</button>
-
-    <!-- Select Slot Machine for Auto-Spin -->
-    <div>
-      <label for="machineSelect">Select Slot Machine for Auto-Spin: </label>
-      <select id="machineSelect"></select>
+    <div id="blackjackGame" style="display:none;">
+      <h2>Blackjack</h2>
+      <p>Player's Hand: <span id="playerHand"></span> | Total: <span id="playerScore">0</span></p>
+      <p>Dealer's Hand: <span id="dealerHand"></span> | Total: <span id="dealerScore">0</span></p>
+      <p>Bet: $<input type="number" id="betAmount" min="1" value="10"></p>
+      <button id="hitButton">Hit</button>
+      <button id="stayButton">Stay</button>
+      <p id="blackjackMessage"></p>
+      <button id="newGameButton">New Game</button>
     </div>
-
-    <p id="messageDisplay"></p>
-
-    <!-- Arrow for New Game -->
-    <div id="arrowContainer">
-      <button id="newGameArrow" onclick="goToNewGame()">➤</button>
-    </div>
-
-    <!-- Background Music -->
-    <audio id="backgroundMusic" src="background-music.mp3" loop></audio>
+    <button id="gameToggleArrow">→</button>
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>

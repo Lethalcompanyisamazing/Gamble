@@ -1,113 +1,97 @@
-// Game State Variables
-let balance = 100;
-let betAmount = 10;
-let currentGame = "slotMachine";
-let slotMachinePrices = { slotMachine: 20, autoSpin: 10, luckUpgrade: 50 };
+// Variables for balance, bets, and other game elements
+let balance = 100; // Starting balance
+const betAmount = 10; // Set default bet
+let playerHand = [];
+let aiHand = [];
+const slotMachinePrice = 20;
+const autoSpinPrice = 10;
+const luckUpgradePrice = 50;
+let playerLuck = 1; // Starting luck
 
-// DOM Elements
+// DOM Elements for slot machine and Blackjack
 const balanceDisplay = document.getElementById("balance");
-const switchGameButton = document.getElementById("switchGameButton");
-const slotMachineContainer = document.getElementById("slotMachineContainer");
+const slotMachinesContainer = document.getElementById("slotMachinesContainer");
+const resultMessageEl = document.getElementById("resultMessage");
 const blackjackContainer = document.getElementById("blackjackContainer");
 const playerHandEl = document.getElementById("playerHand");
 const aiHandEl = document.getElementById("aiHand");
-const playerTotalEl = document.getElementById("playerTotal");
 const aiTotalEl = document.getElementById("aiTotal");
 
-// Initial Setup
+// Initialize balance display
 balanceDisplay.textContent = balance.toFixed(2);
-slotMachineContainer.style.display = "block";
-blackjackContainer.style.display = "none";
 
-// Blackjack-specific Variables
-let playerHand = [];
-let aiHand = [];
+// Slot Machine Functionality
+function createSlotMachine() {
+  const slotMachine = document.createElement("div");
+  slotMachine.classList.add("slotMachine");
 
-// Blackjack Functions
+  // Spin Button
+  const spinButton = document.createElement("button");
+  spinButton.textContent = "Spin";
+  spinButton.addEventListener("click", () => spin(slotMachine));
+  slotMachine.appendChild(spinButton);
+
+  // Add to container
+  slotMachinesContainer.appendChild(slotMachine);
+}
+
+// Spin function with win/lose logic
+function spin(slotMachine) {
+  const winChance = Math.random();
+  let winnings = 0;
+
+  if (winChance < 0.1) {
+    winnings = balance === 0 ? 10 : balance * 0.1;
+  } else if (winChance < 0.3) {
+    winnings = balance === 0 ? 50 : balance * 0.35;
+  } else if (winChance < 0.5) {
+    winnings = balance === 0 ? 100 : balance * 0.65;
+  } else {
+    resultMessageEl.textContent = "You LOST!";
+  }
+
+  balance += winnings;
+  balanceDisplay.textContent = balance.toFixed(2);
+}
+
+// Blackjack Functionality
 function generateCard() {
-  return Math.floor(Math.random() * 11) + 1; // Random card from 1 to 11
+  return Math.floor(Math.random() * 11) + 1;
 }
 
 function calculateHandValue(hand) {
   return hand.reduce((total, card) => total + card, 0);
 }
 
+function updateBlackjackDisplay() {
+  playerHandEl.textContent = playerHand.join(", ");
+  aiHandEl.textContent = aiHand[0] + ", Hidden";
+}
+
+function endGame(message, playerWins) {
+  aiHand[1] = aiHand[1] === "Hidden" ? generateCard() : aiHand[1];
+  const aiTotal = calculateHandValue(aiHand);
+
+  resultMessageEl.textContent = message;
+  aiHandEl.textContent = aiHand.join(", ");
+  aiTotalEl.textContent = aiTotal;
+
+  balance += playerWins ? betAmount * 2 : -betAmount;
+  balanceDisplay.textContent = balance.toFixed(2);
+
+  setTimeout(resetHands, 2000);
+}
+
 function resetHands() {
   playerHand = [generateCard(), generateCard()];
   aiHand = [generateCard(), "Hidden"];
   updateBlackjackDisplay();
+  resultMessageEl.textContent = "";
 }
 
-function updateBlackjackDisplay() {
-  playerHandEl.textContent = playerHand.join(", ");
-  aiHandEl.textContent = aiHand[0] + ", " + (aiHand[1] === "Hidden" ? "?" : aiHand[1]);
-  playerTotalEl.textContent = calculateHandValue(playerHand);
-  aiTotalEl.textContent = aiHand.includes("Hidden") ? "?" : calculateHandValue(aiHand);
-}
-
-function hit() {
-  playerHand.push(generateCard());
-  updateBlackjackDisplay();
-  const playerTotal = calculateHandValue(playerHand);
-  
-  if (playerTotal > 21) {
-    endGame("Bust! You went over 21.", false);
-  }
-}
-
-function stay() {
-  aiHand[1] = generateCard(); // Reveal AI's hidden card
-  let aiTotal = calculateHandValue(aiHand);
-
-  while (aiTotal < 17) {
-    aiHand.push(generateCard());
-    aiTotal = calculateHandValue(aiHand);
-  }
-
-  updateBlackjackDisplay();
-  const playerTotal = calculateHandValue(playerHand);
-
-  if (aiTotal > 21 || playerTotal > aiTotal) {
-    endGame("You won this round!", true);
-  } else {
-    endGame("AI won this round.", false);
-  }
-}
-
-function endGame(message, playerWins) {
-  updateBlackjackDisplay();
-  
-  if (playerWins) {
-    balance += betAmount * 2;
-    alert(message + " You win double your bet!");
-  } else {
-    balance -= betAmount;
-    alert(message + " You lost your bet.");
-  }
-
+// Wipe Save and Reset Prices
+function wipeSave() {
+  balance = 0;
+  playerLuck = 1;
   balanceDisplay.textContent = balance.toFixed(2);
-  resetHands();
 }
-
-// Switch Game Function
-function switchGame() {
-  if (currentGame === "slotMachine") {
-    currentGame = "blackjack";
-    slotMachineContainer.style.display = "none";
-    blackjackContainer.style.display = "block";
-    resetHands();
-  } else {
-    currentGame = "slotMachine";
-    blackjackContainer.style.display = "none";
-    slotMachineContainer.style.display = "block";
-  }
-}
-
-// Event Listeners
-switchGameButton.addEventListener("click", switchGame);
-document.getElementById("hitButton").addEventListener("click", hit);
-document.getElementById("stayButton").addEventListener("click", stay);
-
-// Initialize Display
-resetHands();
-balanceDisplay.textContent = balance.toFixed(2);

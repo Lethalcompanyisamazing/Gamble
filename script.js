@@ -1,77 +1,88 @@
-const switchButton = document.getElementById("switchButton");
-const slotMachineContainer = document.getElementById("slotMachineContainer");
-const blackjackContainer = document.getElementById("blackjackContainer");
-let balance = 100;  // Set an initial balance
-
-document.getElementById("balance").textContent = balance;
-document.getElementById("blackjackBalance").textContent = balance;
-
-// Toggle games when the switch button is clicked
-switchButton.addEventListener("click", () => {
-  const isSlotVisible = slotMachineContainer.style.display !== "none";
-  slotMachineContainer.style.display = isSlotVisible ? "none" : "block";
-  blackjackContainer.style.display = isSlotVisible ? "block" : "none";
-});
-
-// Blackjack gameplay
-const hitButton = document.getElementById("hitButton");
-const stayButton = document.getElementById("stayButton");
-const resultDisplay = document.getElementById("resultDisplay");
+let balance = 100;
+let slotMachinePrice = 20;
+let autoSpinPrice = 10;
+let luckUpgradePrice = 50;
 let playerHand = [];
 let aiHand = [];
+const suits = ["♠", "♥", "♦", "♣"];
 
-// Helper function to get card value
+function updateBalance() {
+  document.getElementById("balance").textContent = balance;
+}
+
+function resetPrices() {
+  slotMachinePrice = 20;
+  autoSpinPrice = 10;
+  luckUpgradePrice = 50;
+  document.getElementById("buySlotButton").textContent = `Buy Slot Machine ($${slotMachinePrice})`;
+  document.getElementById("buyAutoSpinButton").textContent = `Buy Auto-Spin ($${autoSpinPrice})`;
+  document.getElementById("buyLuckUpgradeButton").textContent = `Buy Luck Upgrade ($${luckUpgradePrice})`;
+}
+
+function wipeSave() {
+  balance = 100;
+  resetPrices();
+  document.getElementById("slotMachinesContainer").innerHTML = '';
+  document.getElementById("resultDisplay").textContent = "";
+  updateBalance();
+}
+
+document.getElementById("wipeSaveButton").addEventListener("click", wipeSave);
+
 function getRandomCard() {
-  return Math.floor(Math.random() * 10) + 1;
+  const value = Math.floor(Math.random() * 10) + 1;
+  const suit = suits[Math.floor(Math.random() * suits.length)];
+  return { value, suit };
 }
 
-// Update hand displays
 function updateHands() {
-  document.getElementById("playerHand").textContent = `Player Hand: ${playerHand.join(", ")}`;
+  document.getElementById("playerHand").textContent = `Player Hand: ${playerHand.map(card => `${card.value}${card.suit}`).join(", ")}`;
+  document.getElementById("aiHand").textContent = "AI Hand: ?";
 }
 
-// Hit - Add a card to the player's hand
-hitButton.addEventListener("click", () => {
+function switchGame() {
+  const slotMachineGame = document.getElementById("slotMachineGame");
+  const blackjackGame = document.getElementById("blackjackGame");
+  
+  if (slotMachineGame.style.display === "none") {
+    slotMachineGame.style.display = "block";
+    blackjackGame.style.display = "none";
+  } else {
+    slotMachineGame.style.display = "none";
+    blackjackGame.style.display = "block";
+  }
+}
+
+document.getElementById("switchGameButton").addEventListener("click", switchGame);
+
+function blackjack() {
+  playerHand = [getRandomCard(), getRandomCard()];
+  updateHands();
+}
+
+document.getElementById("hitButton").addEventListener("click", () => {
   playerHand.push(getRandomCard());
   updateHands();
-  checkGameEnd();
 });
 
-// Stay - End the game and calculate the AI's hand
-stayButton.addEventListener("click", () => {
+document.getElementById("stayButton").addEventListener("click", () => {
   aiHand = [getRandomCard(), getRandomCard()];
-  const playerTotal = playerHand.reduce((acc, card) => acc + card, 0);
-  const aiTotal = aiHand.reduce((acc, card) => acc + card, 0);
+  const playerTotal = playerHand.reduce((acc, card) => acc + card.value, 0);
+  const aiTotal = aiHand.reduce((acc, card) => acc + card.value, 0);
+
+  document.getElementById("aiHand").textContent = `AI Hand: ${aiHand.map(card => `${card.value}${card.suit}`).join(", ")} (Total: ${aiTotal})`;
 
   if (playerTotal > 21) {
-    resultDisplay.textContent = `You Busted! AI wins. AI's hand: ${aiHand.join(", ")}`;
+    balance -= 10;
+    document.getElementById("resultDisplay").textContent = "You Busted! AI wins.";
   } else if (aiTotal > 21 || playerTotal > aiTotal) {
     balance += 20;
-    resultDisplay.textContent = `You Win! AI's hand: ${aiHand.join(", ")}`;
+    document.getElementById("resultDisplay").textContent = "You Win!";
   } else {
-    balance -= 20;
-    resultDisplay.textContent = `AI Wins! AI's hand: ${aiHand.join(", ")}`;
+    balance -= 10;
+    document.getElementById("resultDisplay").textContent = "AI Wins!";
   }
-  document.getElementById("balance").textContent = balance;
-  document.getElementById("blackjackBalance").textContent = balance;
-  resetGame();
+  updateBalance();
 });
 
-// Check if player has busted
-function checkGameEnd() {
-  const playerTotal = playerHand.reduce((acc, card) => acc + card, 0);
-  if (playerTotal > 21) {
-    resultDisplay.textContent = "You Busted!";
-    balance -= 20;
-    document.getElementById("balance").textContent = balance;
-    document.getElementById("blackjackBalance").textContent = balance;
-    resetGame();
-  }
-}
-
-// Reset hands for new game
-function resetGame() {
-  playerHand = [];
-  aiHand = [];
-  updateHands();
-}
+blackjack();

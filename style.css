@@ -1,37 +1,59 @@
+/* General styling */
 body {
   font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 20px;
   text-align: center;
 }
 
+/* Container for the entire app */
 #app {
-  width: 600px;
-  margin: auto;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: white;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 }
 
-#switchGameButton {
-  position: fixed;
-  right: 20px;
-  top: 20px;
-  padding: 10px 20px;
-  font-size: 16px;
-  background-color: #3498db;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
+/* Header styling */
+h1 {
+  color: #333;
+  margin-bottom: 20px;
 }
 
-#blackjackContainer, #slotMachineContainer {
+/* Balance display */
+p {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+/* Slot machine container */
+#slotMachinesContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+/* Blackjack container */
+#blackjackContainer {
   margin-top: 20px;
-  display: none;
-}
-
-#slotMachineContainer.active, #blackjackContainer.active {
-  display: block;
 }
 
 button {
   padding: 10px;
-  margin: 5px;
-  font-size: 16px;
+  font-size: 14px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #45a049;
 }

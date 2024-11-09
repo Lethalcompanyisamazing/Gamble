@@ -6,23 +6,42 @@ body {
   text-align: center;
 }
 
-#switchButton {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  padding: 10px;
+#app {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: white;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 10px;
+  font-size: 14px;
   background-color: #2196F3;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-#app, #blackjackContainer {
-  max-width: 800px;
-  margin: auto;
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+button:hover {
+  background-color: #1e88e5;
+}
+
+#switchGameButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+#slotMachinesContainer, #playerHand, #aiHand {
+  font-size: 18px;
+  margin: 10px;
+}
+
+audio {
+  display: none;
 }

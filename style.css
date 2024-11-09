@@ -1,59 +1,27 @@
-/* General styling */
 body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f4;
-  margin: 0;
-  padding: 20px;
   text-align: center;
 }
 
-/* Container for the entire app */
 #app {
   max-width: 800px;
-  margin: 0 auto;
+  margin: auto;
   padding: 20px;
-  background-color: white;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Header styling */
-h1 {
-  color: #333;
-  margin-bottom: 20px;
-}
-
-/* Balance display */
-p {
-  font-size: 18px;
-  margin-bottom: 20px;
-}
-
-/* Slot machine container */
-#slotMachinesContainer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-/* Blackjack container */
-#blackjackContainer {
-  margin-top: 20px;
+.slotMachine, #blackjackContainer {
+  margin: 20px auto;
+  padding: 15px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  width: 200px;
 }
 
 button {
   padding: 10px;
-  font-size: 14px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 5px;
+  margin: 10px;
   cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-button:hover {
-  background-color: #45a049;
 }

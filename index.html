@@ -3,34 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Slot Machine Game</title>
+  <title>Game Hub</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="app">
-    <h1>Slot Machine Game</h1>
-    <p>Balance: $<span id="balance">100</span></p>
-    <div id="slotMachinesContainer"></div>
-    <div id="upgradeContainer">
-      <button id="buySlotButton">Buy Slot Machine ($20.00)</button>
-      <button id="buyAutoSpinButton">Buy Auto-Spin ($10.00)</button>
-      <button id="buyLuckUpgradeButton">Buy Luck Upgrade ($50.00)</button>
+    <h1 id="gameTitle">Slot Machine Game</h1>
+    <div id="slotMachineContainer">
+      <!-- Slot Machine Game Content Here -->
+      <p>Balance: $<span id="balance">0</span></p>
+      <div id="slotMachinesContainer"></div>
       <button id="wipeSaveButton">Wipe Save</button>
     </div>
-    <audio id="backgroundMusic" src="background-music.mp3" loop></audio>
+    
+    <div id="blackjackContainer" style="display: none;">
+      <!-- Blackjack Game Content Here -->
+      <h2>Blackjack Game</h2>
+      <p>Player Hand: <span id="playerHand"></span></p>
+      <p>AI Hand: <span id="aiHand"></span></p>
+      <p>Player Total: <span id="playerTotal"></span></p>
+      <p>AI Total: <span id="aiTotal"></span></p>
+      <button id="hitButton">Hit</button>
+      <button id="stayButton">Stay</button>
+      <button id="betButton">Place Bet</button>
+      <p id="blackjackResult"></p>
+    </div>
+    
+    <button id="switchGameButton">Switch Game</button>
   </div>
-
-  <!-- Blackjack Game Section (Initially Hidden) -->
-  <div id="blackjackGame" style="display: none;">
-    <h1>Blackjack Game</h1>
-    <p id="blackjackMessage">Welcome to Blackjack! Place your bet to begin.</p>
-    <button id="hitButton">Hit</button>
-    <button id="stayButton">Stay</button>
-    <button id="placeBetButton">Place Bet</button>
-  </div>
-
-  <!-- Game Toggle Button -->
-  <button id="gameToggleArrow">Switch Game</button>
 
   <script src="script.js"></script>
 </body>

@@ -1,78 +1,119 @@
+// Elements for game toggling
+const switchGameButton = document.getElementById("switchGameButton");
+const slotMachineGame = document.getElementById("slotMachineGame");
+const blackjackGame = document.getElementById("blackjackGame");
 let balance = 100;
+
+// Initial display settings
+document.getElementById("balance").textContent = balance;
+
+// Toggle between Slot Machine and Blackjack game
+switchGameButton.addEventListener("click", () => {
+  if (slotMachineGame.style.display !== "none") {
+    // Hide Slot Machine, show Blackjack
+    slotMachineGame.style.display = "none";
+    blackjackGame.style.display = "block";
+    switchGameButton.textContent = "Switch to Slot Machine";
+  } else {
+    // Show Slot Machine, hide Blackjack
+    slotMachineGame.style.display = "block";
+    blackjackGame.style.display = "none";
+    switchGameButton.textContent = "Switch to Blackjack";
+  }
+});
+
+// Basic Blackjack functionality placeholders
+const betButton = document.getElementById("betButton");
+const hitButton = document.getElementById("hitButton");
+const stayButton = document.getElementById("stayButton");
+const resultDisplay = document.getElementById("resultDisplay");
+let currentBet = 0;
 let playerHand = [];
 let aiHand = [];
-let currentBet = 0;
-const suits = ["♠", "♥", "♦", "♣"];
 
-function updateBalance() {
+// Update the balance display
+function updateBalanceDisplay() {
   document.getElementById("balance").textContent = balance;
 }
 
-function resetGame() {
-  playerHand = [];
-  aiHand = [];
-  currentBet = 0;
-  document.getElementById("resultDisplay").textContent = "";
-  document.getElementById("aiHand").textContent = "AI Hand: ?";
-  document.getElementById("betDisplay").textContent = "Current Bet: $0";
-  updateHands();
-}
-
-function getRandomCard() {
-  const value = Math.floor(Math.random() * 10) + 1;
-  const suit = suits[Math.floor(Math.random() * suits.length)];
-  return { value, suit };
-}
-
-function updateHands() {
-  document.getElementById("playerHand").textContent = `Player Hand: ${playerHand.map(card => `${card.value}${card.suit}`).join(", ")}`;
-  if (aiHand.length > 0) {
-    document.getElementById("aiHand").textContent = `AI Hand: ${aiHand[0].value}${aiHand[0].suit}, ?`;
-  }
-}
-
-function placeBet() {
-  const betAmount = prompt("Enter your bet amount:");
-  if (betAmount && betAmount > 0 && betAmount <= balance) {
-    currentBet = parseInt(betAmount, 10);
+// Betting functionality
+betButton.addEventListener("click", () => {
+  if (balance >= 10) {  // Set minimum bet as $10
+    currentBet = 10;
     balance -= currentBet;
-    updateBalance();
+    updateBalanceDisplay();
     document.getElementById("betDisplay").textContent = `Current Bet: $${currentBet}`;
-    blackjack();
+    resultDisplay.textContent = "You placed a bet!";
   } else {
-    alert("Invalid bet amount!");
+    resultDisplay.textContent = "Not enough balance!";
   }
-}
-
-function blackjack() {
-  playerHand = [getRandomCard(), getRandomCard()];
-  aiHand = [getRandomCard(), getRandomCard()];
-  updateHands();
-}
-
-document.getElementById("betButton").addEventListener("click", placeBet);
-
-document.getElementById("hitButton").addEventListener("click", () => {
-  playerHand.push(getRandomCard());
-  updateHands();
 });
 
-document.getElementById("stayButton").addEventListener("click", () => {
-  const playerTotal = playerHand.reduce((acc, card) => acc + card.value, 0);
-  const aiTotal = aiHand.reduce((acc, card) => acc + card.value, 0);
+// Hit functionality (adds a card to player's hand)
+hitButton.addEventListener("click", () => {
+  if (currentBet > 0) {
+    const card = Math.floor(Math.random() * 11) + 1; // Random card between 1 and 11
+    playerHand.push(card);
+    document.getElementById("playerHand").textContent = `Player Hand: ${playerHand.join(", ")}`;
+    resultDisplay.textContent = `You drew a ${card}`;
+    checkPlayerHand();
+  } else {
+    resultDisplay.textContent = "Please place a bet first!";
+  }
+});
 
-  document.getElementById("aiHand").textContent = `AI Hand: ${aiHand.map(card => `${card.value}${card.suit}`).join(", ")} (Total: ${aiTotal})`;
+// Stay functionality (triggers AI's turn and evaluates winner)
+stayButton.addEventListener("click", () => {
+  if (currentBet > 0) {
+    aiTurn();
+    evaluateWinner();
+  } else {
+    resultDisplay.textContent = "Please place a bet first!";
+  }
+});
+
+// Check if player hand exceeds 21 (bust)
+function checkPlayerHand() {
+  const playerTotal = playerHand.reduce((sum, card) => sum + card, 0);
+  if (playerTotal > 21) {
+    resultDisplay.textContent = "Bust! You lose.";
+    currentBet = 0;
+    resetHands();
+  }
+}
+
+// AI turn logic (basic random hand generation)
+function aiTurn() {
+  aiHand = [Math.floor(Math.random() * 11) + 1, Math.floor(Math.random() * 11) + 1];
+  document.getElementById("aiHand").textContent = `AI Hand: ${aiHand.join(", ")}`;
+}
+
+// Evaluate winner based on hand values
+function evaluateWinner() {
+  const playerTotal = playerHand.reduce((sum, card) => sum + card, 0);
+  const aiTotal = aiHand.reduce((sum, card) => sum + card, 0);
 
   if (playerTotal > 21) {
-    document.getElementById("resultDisplay").textContent = "You Busted! AI wins.";
+    resultDisplay.textContent = "Bust! You lose.";
   } else if (aiTotal > 21 || playerTotal > aiTotal) {
+    resultDisplay.textContent = "You win!";
     balance += currentBet * 2;
-    document.getElementById("resultDisplay").textContent = "You Win!";
+  } else if (playerTotal === aiTotal) {
+    resultDisplay.textContent = "It's a tie!";
+    balance += currentBet;
   } else {
-    document.getElementById("resultDisplay").textContent = "AI Wins!";
+    resultDisplay.textContent = "You lose!";
   }
-  updateBalance();
-  resetGame();
-});
 
-resetGame();
+  currentBet = 0;
+  resetHands();
+  updateBalanceDisplay();
+}
+
+// Reset hands for next round
+function resetHands() {
+  playerHand = [];
+  aiHand = [];
+  document.getElementById("playerHand").textContent = "Player Hand:";
+  document.getElementById("aiHand").textContent = "AI Hand: ?";
+}

@@ -1,11 +1,30 @@
-// Game Switching Elements
+// Initial setup and elements
+let balance = 100;
+document.getElementById("balance").textContent = balance;
+
 const switchGameButton = document.getElementById("switchGameButton");
 const slotMachineGame = document.getElementById("slotMachineGame");
 const blackjackGame = document.getElementById("blackjackGame");
 
-// Initial balance and display
-let balance = 100;
-document.getElementById("balance").textContent = balance;
+const buySlotButton = document.getElementById("buySlotButton");
+const spinButton = document.getElementById("spinButton");
+const slotMachinesContainer = document.getElementById("slotMachinesContainer");
+
+// Disable switching to Blackjack initially
+blackjackGame.style.display = "none";
+switchGameButton.disabled = true;
+
+// Update balance display
+function updateBalanceDisplay() {
+  document.getElementById("balance").textContent = balance;
+}
+
+// Check if balance is sufficient to unlock Blackjack
+function checkBalanceForUnlock() {
+  if (balance >= 110) {
+    switchGameButton.disabled = false;
+  }
+}
 
 // Toggle between Slot Machine and Blackjack game
 switchGameButton.addEventListener("click", () => {
@@ -20,7 +39,48 @@ switchGameButton.addEventListener("click", () => {
   }
 });
 
-// Blackjack Elements
+// Slot Machine: Buy a Slot Machine
+buySlotButton.addEventListener("click", () => {
+  if (balance >= 20) {
+    balance -= 20;
+    updateBalanceDisplay();
+    checkBalanceForUnlock();
+    
+    // Create and display a new slot machine reel
+    const newReel = document.createElement("div");
+    newReel.classList.add("reel");
+    newReel.textContent = getRandomEmoji();
+    slotMachinesContainer.appendChild(newReel);
+  } else {
+    alert("Not enough balance to buy a slot machine!");
+  }
+});
+
+// Slot Machine: Spin all slot machines
+spinButton.addEventListener("click", () => {
+  const reels = document.querySelectorAll('.reel');
+  if (reels.length === 0) {
+    alert("You need to buy at least one slot machine to spin!");
+    return;
+  }
+
+  reels.forEach(reel => {
+    reel.textContent = getRandomEmoji();
+  });
+
+  // Simple payout logic: add $10 for each spin (for testing purposes)
+  balance += 10;
+  updateBalanceDisplay();
+  checkBalanceForUnlock();
+});
+
+// Function to get a random emoji
+function getRandomEmoji() {
+  const emojis = ["🍒", "🍋", "🔔", "🍉", "⭐", "💎"];
+  return emojis[Math.floor(Math.random() * emojis.length)];
+}
+
+// Blackjack Game Logic
 const betButton = document.getElementById("betButton");
 const hitButton = document.getElementById("hitButton");
 const stayButton = document.getElementById("stayButton");
@@ -28,11 +88,6 @@ const resultDisplay = document.getElementById("resultDisplay");
 let currentBet = 0;
 let playerHand = [];
 let aiHand = [];
-
-// Update balance display
-function updateBalanceDisplay() {
-  document.getElementById("balance").textContent = balance;
-}
 
 // Deal starter cards when placing a bet
 betButton.addEventListener("click", () => {
@@ -127,38 +182,3 @@ function resetHands() {
   document.getElementById("playerHand").textContent = "Player Hand:";
   document.getElementById("aiHand").textContent = "AI Hand: ?";
 }
-
-// Slot Machine Elements and Logic
-const buySlotButton = document.getElementById("buySlotButton");
-const spinButton = document.getElementById("spinButton");
-
-// Function to spin the slot machine reels
-function spinSlotMachine() {
-  const reels = document.querySelectorAll('.reel'); // Ensure each reel has the "reel" class
-  reels.forEach(reel => {
-    reel.textContent = getRandomEmoji(); // Populate each reel with a random emoji
-  });
-}
-
-// Function to get a random emoji (or symbol)
-function getRandomEmoji() {
-  const emojis = ["🍒", "🍋", "🔔", "🍉", "⭐", "💎"]; // Define your symbols here
-  return emojis[Math.floor(Math.random() * emojis.length)];
-}
-
-// Trigger spin when spin button is clicked
-spinButton.addEventListener("click", spinSlotMachine);
-
-// Buying Slot Machine Functionality (if applicable)
-buySlotButton.addEventListener("click", () => {
-  if (balance >= 20) {
-    balance -= 20;
-    updateBalanceDisplay();
-    const newSlotMachine = document.createElement("div");
-    newSlotMachine.classList.add("reel");
-    newSlotMachine.textContent = getRandomEmoji();
-    document.getElementById("slotMachinesContainer").appendChild(newSlotMachine);
-  } else {
-    alert("Not enough balance to buy a slot machine!");
-  }
-});

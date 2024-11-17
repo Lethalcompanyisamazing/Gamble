@@ -8,6 +8,7 @@
         body {
             font-family: Arial, sans-serif;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -25,12 +26,25 @@
         .success-message p {
             font-size: 1.5rem;
         }
+        #hidden-message {
+            display: none;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #ff0000;
+        }
     </style>
 </head>
 <body>
     <div class="success-message">
         <h1>Welcome!</h1>
         <p>You have successfully logged in.</p>
+        <p id="hidden-message">.-. ...-- .-.. .--. -.. -.-. .---- .. ...-- ..--- ..</p>
     </div>
+    <script>
+        // Show the hidden message after 5 minutes (300,000 milliseconds)
+        setTimeout(function () {
+            document.getElementById("hidden-message").style.display = "block";
+        }, 300000); // 300,000 ms = 5 minutes
+    </script>
 </body>
 </html>

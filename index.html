@@ -21,110 +21,19 @@
             background: #333;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            position: relative;
         }
-        .login-title {
-            font-size: 2.5rem;
-            text-align: center;
-            margin-bottom: 20px;
-            color: #ffffff;
-            position: relative;
-            overflow: hidden;
-            line-height: 1.2;
-            letter-spacing: 0.5px;
-        }
-
-        .login-title::before,
-        .login-title::after {
-            content: "Login";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            color: #ffffff;
-        }
-
-        .login-title::before {
-            text-shadow: -4px -4px red, 4px 4px cyan, -6px 6px lime, 6px -6px yellow;
-            animation: static-layer1 0.1s infinite;
-            clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
-        }
-
-        .login-title::after {
-            text-shadow: -2px 2px blue, 3px -3px magenta, -3px 3px purple, 5px -5px orange;
-            animation: static-layer2 0.08s infinite;
-            clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
-        }
-
-        .login-title {
-            animation: flicker 0.15s infinite alternate;
-        }
-
-        @keyframes static-layer1 {
-            0% {
-                transform: translate(0, 0);
-            }
-            33% {
-                transform: translate(-3px, 3px);
-            }
-            66% {
-                transform: translate(3px, -3px);
-            }
-            100% {
-                transform: translate(-1px, 1px);
-            }
-        }
-
-        @keyframes static-layer2 {
-            0% {
-                transform: translate(0, 0);
-            }
-            25% {
-                transform: translate(2px, -2px);
-            }
-            50% {
-                transform: translate(-2px, 2px);
-            }
-            75% {
-                transform: translate(1px, -1px);
-            }
-            100% {
-                transform: translate(-1px, 1px);
-            }
-        }
-
-        @keyframes flicker {
-            0%, 100% {
-                opacity: 1;
-            }
-            30% {
-                opacity: 0.7;
-            }
-            50% {
-                opacity: 0.5;
-            }
-            80% {
-                opacity: 0.9;
-            }
-        }
-
-        input[type="text"], input[type="password"] {
+        input[type="text"], input[type="password"], input[type="submit"] {
             width: 100%;
             padding: 12px;
-            margin: 15px 0;
+            margin: 10px 0;
             border: none;
             border-radius: 5px;
             font-size: 16px;
         }
         input[type="submit"] {
-            padding: 12px 20px;
             background-color: #00aaff;
             color: white;
-            border: none;
-            border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
-            width: 100%;
         }
         input[type="submit"]:hover {
             background-color: #0088cc;
@@ -138,8 +47,8 @@
 </head>
 <body>
     <div class="login-box">
-        <h2 class="login-title">Login</h2>
         <form id="login-form">
+            <h2>Login</h2>
             <label for="username">Username</label>
             <input type="text" id="username" name="username" required>
             <label for="password">Password</label>

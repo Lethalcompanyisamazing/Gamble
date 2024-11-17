@@ -34,7 +34,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Glitch Effect: Base Text */
         .login-title::before,
         .login-title::after {
             content: "Login";
@@ -45,26 +44,22 @@
             color: #ffffff;
         }
 
-        /* Static Effect: Layer 1 */
         .login-title::before {
             text-shadow: -4px -4px red, 4px 4px cyan, -6px 6px lime, 6px -6px yellow;
             animation: static-layer1 0.1s infinite;
             clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
         }
 
-        /* Static Effect: Layer 2 */
         .login-title::after {
             text-shadow: -2px 2px blue, 3px -3px magenta, -3px 3px purple, 5px -5px orange;
             animation: static-layer2 0.08s infinite;
             clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
         }
 
-        /* Flickering Effect */
         .login-title {
             animation: flicker 0.15s infinite alternate;
         }
 
-        /* Keyframes for Static Layers */
         @keyframes static-layer1 {
             0% {
                 transform: translate(0, 0);
@@ -98,7 +93,6 @@
             }
         }
 
-        /* Keyframes for Flicker Effect */
         @keyframes flicker {
             0%, 100% {
                 opacity: 1;

@@ -16,69 +16,106 @@
             margin: 0;
         }
         .login-box {
-            width: 400px; /* Increased width */
-            padding: 30px; /* More padding */
+            width: 400px;
+            padding: 30px;
             background: #333;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
             position: relative;
         }
         .login-title {
-            font-size: 2rem;
+            font-size: 2.5rem;
             text-align: center;
             margin-bottom: 20px;
             color: #ffffff;
             position: relative;
             overflow: hidden;
         }
-        .login-title::before, .login-title::after {
+
+        /* Glitch Effect: Base Text */
+        .login-title::before,
+        .login-title::after {
             content: "Login";
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             color: #ffffff;
-            text-shadow: -2px 0 red, 2px 0 cyan;
+        }
+
+        /* Glitch Effect: Layer 1 */
+        .login-title::before {
+            text-shadow: -3px 0 red, 3px 0 cyan, -6px 0 lime;
+            animation: glitch-layer1 1.5s infinite alternate-reverse;
             clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
-            animation: glitch1 2s infinite;
         }
+
+        /* Glitch Effect: Layer 2 */
         .login-title::after {
-            text-shadow: -2px 0 cyan, 2px 0 red;
+            text-shadow: -2px 2px blue, 4px -4px yellow, -4px 4px purple;
+            animation: glitch-layer2 2s infinite alternate;
             clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
-            animation: glitch2 2s infinite;
         }
-        @keyframes glitch1 {
-            0%, 100% {
+
+        /* Glitch Effect: Flicker */
+        .login-title {
+            animation: glitch-flicker 0.2s infinite;
+        }
+
+        /* Keyframes for Glitch Layers */
+        @keyframes glitch-layer1 {
+            0% {
                 transform: translate(0);
             }
-            33% {
-                transform: translate(2px, -2px);
+            50% {
+                transform: translate(-4px, 4px);
             }
-            66% {
-                transform: translate(-2px, 2px);
+            100% {
+                transform: translate(4px, -4px);
             }
         }
-        @keyframes glitch2 {
-            0%, 100% {
+
+        @keyframes glitch-layer2 {
+            0% {
                 transform: translate(0);
             }
-            33% {
-                transform: translate(-2px, 2px);
+            50% {
+                transform: translate(3px, 3px);
             }
-            66% {
-                transform: translate(2px, -2px);
+            100% {
+                transform: translate(-3px, -3px);
             }
         }
+
+        /* Keyframes for Flickering Effect */
+        @keyframes glitch-flicker {
+            0%, 100% {
+                opacity: 1;
+            }
+            20% {
+                opacity: 0.8;
+            }
+            40% {
+                opacity: 0.5;
+            }
+            60% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 0.7;
+            }
+        }
+
         input[type="text"], input[type="password"] {
             width: 100%;
-            padding: 12px; /* Larger padding */
-            margin: 15px 0; /* Increased margin */
+            padding: 12px;
+            margin: 15px 0;
             border: none;
             border-radius: 5px;
             font-size: 16px;
         }
         input[type="submit"] {
-            padding: 12px 20px; /* Larger padding */
+            padding: 12px 20px;
             background-color: #00aaff;
             color: white;
             border: none;

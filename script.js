@@ -16,8 +16,9 @@ document.getElementById("login-form").addEventListener("submit", function (e) {
     // Check credentials
     if (enteredUsername === correctUsername && enteredPassword === correctPassword) {
         successSound.play(); // Play the success sound
-        alert("Login successful!");
-        // Redirect or do something else on success
+        successSound.onended = () => {
+            window.location.href = "success.html"; // Redirect to the next page
+        };
     } else {
         document.getElementById("error-message").innerText = "Invalid username or password.";
     }

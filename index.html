@@ -1,46 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Slot Machine and Blackjack Game</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+        }
+        .login-box {
+            padding: 20px;
+            background: #333;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+        }
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #00aaff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        input[type="submit"]:hover {
+            background-color: #0088cc;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
-  <div id="app">
-    <h1>Games</h1>
-    <p>Balance: $<span id="balance">100</span></p>
-    
-    <!-- Game Switch Button -->
-    <button id="switchGameButton">Switch to Blackjack</button>
-    
-    <!-- Slot Machine Section -->
-    <div id="slotMachineGame">
-      <h2>Slot Machine</h2>
-      <button id="buySlotButton">Buy Slot Machine ($20)</button>
-      <button id="buyAutoSpinButton">Buy Auto-Spin ($10)</button>
-      <button id="buyLuckUpgradeButton">Buy Luck Upgrade ($50)</button>
-      <button id="wipeSaveButton">Wipe Save</button>
-      <div id="slotMachinesContainer"></div>
+    <div class="login-box">
+        <h2>Login</h2>
+        <form id="login-form">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+            <input type="submit" value="Login">
+            <p id="error-message" class="error"></p>
+        </form>
     </div>
 
-    <!-- Blackjack Section -->
-    <div id="blackjackGame" style="display: none;">
-      <h2>Blackjack</h2>
-      <p>Balance: $<span id="balance">100</span></p>
-      <p id="betDisplay">Current Bet: $0</p>
-      <div id="playerHand">Player Hand:</div>
-      <div id="aiHand">AI Hand: ?</div>
-      <button id="betButton">Bet</button>
-      <button id="hitButton">Hit</button>
-      <button id="stayButton">Stay</button>
-      <p id="resultDisplay"></p>
-    </div>
-
-    <!-- Background Music -->
-    <audio id="backgroundMusic" src="background-music.mp3" loop></audio>
-  </div>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

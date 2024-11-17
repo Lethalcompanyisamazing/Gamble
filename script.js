@@ -1,21 +1,24 @@
-// Change these to set the username and password
-const VALID_USERNAME = "admin";
-const VALID_PASSWORD = "mypassword";
+// Predefined username and password
+const correctUsername = "admin";
+const correctPassword = "password123";
 
-// Function to handle form submission
-document.getElementById("login-form").addEventListener("submit", function(event) {
-    event.preventDefault();
+// Sound setup
+const successSound = new Audio("login-success.mp3");
 
+// Form handling
+document.getElementById("login-form").addEventListener("submit", function (e) {
+    e.preventDefault(); // Prevent form submission
+
+    // Get input values
     const enteredUsername = document.getElementById("username").value;
     const enteredPassword = document.getElementById("password").value;
-    const errorMessage = document.getElementById("error-message");
 
-    // Check if the entered credentials match the valid ones
-    if (enteredUsername === VALID_USERNAME && enteredPassword === VALID_PASSWORD) {
-        errorMessage.textContent = "";
+    // Check credentials
+    if (enteredUsername === correctUsername && enteredPassword === correctPassword) {
+        successSound.play(); // Play the success sound
         alert("Login successful!");
-        window.location.href = "success.html"; // Redirect on success
+        // Redirect or do something else on success
     } else {
-        errorMessage.textContent = "Invalid username or password. Please try again.";
+        document.getElementById("error-message").innerText = "Invalid username or password.";
     }
 });

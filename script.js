@@ -7,11 +7,6 @@ let dealerCards = [];
 let playerTotal = 0;
 let dealerTotal = 0;
 
-// Roulette Variables
-let betNumber = null;
-let betAmount = null;
-let betType = null; // Even, Odd, Black, Red
-
 // Display money on both pages
 document.getElementById("money-display").innerText = `Money: $${money}`;
 
@@ -161,65 +156,3 @@ function resetBlackjackGame() {
   document.getElementById("player-total").innerText = "Your Total: ";
   document.getElementById("dealer-total").innerText = "Dealer's Total: ";
 }
-
-// Roulette: Place bet functionality
-document.getElementById("place-bet-roulette").addEventListener("click", function() {
-  betNumber = parseInt(document.getElementById("bet-number").value);
-  betAmount = parseInt(document.getElementById("bet-amount-roulette").value);
-  betType = document.querySelector('input[name="bet-type"]:checked')?.value;
-
-  if (isNaN(betAmount) || betAmount <= 0) {
-    alert("Please enter a valid bet amount.");
-    return;
-  }
-
-  if (betAmount > money) {
-    alert("You don't have enough money to place this bet.");
-    return;
-  }
-
-  if (betNumber < 0 || betNumber > 36) {
-    alert("Please choose a number between 0 and 36.");
-    return;
-  }
-
-  money -= betAmount;
-  document.getElementById("money-display").innerText = `Money: $${money}`;
-  document.getElementById("spin-wheel").style.display = "inline";
-  document.getElementById("place-bet-roulette").style.display = "none";
-});
-
-// Roulette: Spin the wheel
-document.getElementById("spin-wheel").addEventListener("click", function() {
-  const winningNumber = Math.floor(Math.random() * 37);
-  const isEven = winningNumber % 2 === 0;
-  const isRed = (winningNumber >= 1 && winningNumber <= 10) || (winningNumber >= 19 && winningNumber <= 28);
-  const isBlack = !isRed;
-
-  document.getElementById("spin-result").style.display = "block";
-  document.getElementById("spin-result").innerText = `The winning number is: ${winningNumber}`;
-
-  // Evaluate bets
-  if (betNumber === winningNumber) {
-    money += betAmount * 2;  // Win on exact number
-    document.getElementById("spin-result").innerText += ` You won! Your new balance is: $${money}`;
-  } else if (betType === "even" && isEven) {
-    money += betAmount * 2;  // Win on Even
-    document.getElementById("spin-result").innerText += ` You won! Your new balance is: $${money}`;
-  } else if (betType === "odd" && !isEven) {
-    money += betAmount * 2;  // Win on Odd
-    document.getElementById("spin-result").innerText += ` You won! Your new balance is: $${money}`;
-  } else if (betType === "red" && isRed) {
-    money += betAmount * 2;  // Win on Red
-    document.getElementById("spin-result").innerText += ` You won! Your new balance is: $${money}`;
-  } else if (betType === "black" && isBlack) {
-    money += betAmount * 2;  // Win on Black
-    document.getElementById("spin-result").innerText += ` You won! Your new balance is: $${money}`;
-  } else {
-    document.getElementById("spin-result").innerText += " You lost!";
-  }
-
-  // Reset for next round
-  document.getElementById("place-bet-roulette").style.display = "inline";
-  document.getElementById("spin-wheel").style.display = "none";
-});

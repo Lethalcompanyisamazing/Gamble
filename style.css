@@ -41,3 +41,14 @@ button:disabled {
   margin-top: 20px;
   font-size: 1.2rem;
 }
+
+/* Arrow style */
+#arrow {
+  font-size: 3rem; /* Make the arrow big */
+  position: fixed;
+  right: 20px; /* Position it on the right side */
+  top: 50%; /* Center it vertically */
+  transform: translateY(-50%); /* Adjust for exact centering */
+  cursor: pointer;
+  z-index: 10;
+}

@@ -1,54 +1,47 @@
 body {
   font-family: Arial, sans-serif;
   text-align: center;
-  background-color: #2b2b2b;
-  color: white;
-  margin: 0;
+  background-color: #f4f4f4;
+  color: #333;
   padding: 20px;
 }
 
 h1 {
-  font-size: 2.5rem;
-}
-
-p {
-  font-size: 1.2rem;
+  font-size: 2rem;
 }
 
 button {
   padding: 10px 20px;
   font-size: 1rem;
   cursor: pointer;
-  margin: 5px;
+  margin: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
 }
 
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+button:hover {
+  background-color: #45a049;
 }
 
-#player-total {
-  font-size: 2rem; /* Increased font size for player's total */
+#money-display {
+  font-size: 1.5rem;
   margin-top: 20px;
 }
 
-#player-cards, #dealer-cards {
-  font-size: 3rem; /* Increased font size for card displays */
+#bet-number, #bet-amount {
   margin-top: 10px;
+  padding: 5px;
+  font-size: 1rem;
 }
 
-#game-log {
+#spin-result {
   margin-top: 20px;
   font-size: 1.2rem;
 }
 
-/* Arrow style */
-#arrow {
-  font-size: 3rem; /* Make the arrow big */
-  position: fixed;
-  right: 20px; /* Position it on the right side */
-  top: 50%; /* Center it vertically */
-  transform: translateY(-50%); /* Adjust for exact centering */
-  cursor: pointer;
-  z-index: 10;
+a {
+  margin-top: 20px;
+  display: block;
 }

@@ -1,47 +1,27 @@
-body {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  background-color: #f4f4f4;
-  color: #333;
-  padding: 20px;
-}
-
-h1 {
-  font-size: 2rem;
-}
-
 button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  cursor: pointer;
-  margin: 10px;
-  background-color: #4CAF50;
+  background-color: black;
   color: white;
+  font-size: 18px;
+  padding: 12px 24px;
   border: none;
-  border-radius: 5px;
+  cursor: pointer;
+  display: inline-block;
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #444;
+}
+
+button:disabled {
+  background-color: gray;
+}
+
+#spin-wheel, #place-bet {
+  display: inline-block;
+  margin: 10px;
 }
 
 #money-display {
-  font-size: 1.5rem;
-  margin-top: 20px;
-}
-
-#bet-number, #bet-amount {
-  margin-top: 10px;
-  padding: 5px;
-  font-size: 1rem;
-}
-
-#spin-result {
-  margin-top: 20px;
-  font-size: 1.2rem;
-}
-
-a {
-  margin-top: 20px;
-  display: block;
+  font-size: 24px;
+  margin: 20px;
 }

@@ -6,6 +6,7 @@ const hitButton = document.getElementById('hit-button');
 const checkButton = document.getElementById('check-button');
 const playerHandElement = document.getElementById('player-hand');
 const dealerHandElement = document.getElementById('dealer-hand');
+const playerTotalElement = document.getElementById('player-total'); // New element for player's total
 const gameLog = document.getElementById('game-log');
 
 // Deck of card emojis and values
@@ -49,12 +50,15 @@ function calculateHand(hand) {
   return total;
 }
 
-// Render hands
+// Render hands and player's total
 function renderHands() {
   playerHandElement.textContent = playerHand.map(card => card.emoji).join(' ');
   dealerHandElement.textContent = dealerHand.length === 1
     ? '🂠'
     : dealerHand.map(card => card.emoji).join(' ');
+
+  // Update player's total display
+  playerTotalElement.textContent = `Your Total: ${calculateHand(playerHand)}`;
 }
 
 // Start a new round

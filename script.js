@@ -42,6 +42,7 @@ function calculateHand(hand) {
   let total = hand.reduce((sum, card) => sum + card.value, 0);
   let aces = hand.filter(card => card.value === 11).length;
 
+  // Adjust for Aces if total is over 21
   while (total > 21 && aces > 0) {
     total -= 10;
     aces--;

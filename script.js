@@ -162,6 +162,6 @@ const goToTexasHoldemButton = document.createElement("button");
 goToTexasHoldemButton.innerText = "Go to Texas Hold'em";
 goToTexasHoldemButton.style.marginTop = "20px";
 goToTexasHoldemButton.addEventListener("click", function() {
-  window.location.href = "/texas-holdem"; // Adjust this URL based on where the Texas Hold'em page is located
+  window.location.href = "https://blackjacklol.netlify.app/texas.html"; // Adjust this URL based on where the Texas Hold'em page is located
 });
 document.body.appendChild(goToTexasHoldemButton);

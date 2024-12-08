@@ -28,7 +28,7 @@ button:disabled {
 }
 
 #player-cards, #dealer-cards {
-  font-size: 1.5rem;
+  font-size: 10rem;
   margin-top: 10px;
 }
 

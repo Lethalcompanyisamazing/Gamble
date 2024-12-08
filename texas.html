@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Texas Hold'em Game</title>
+  <link rel="stylesheet" href="Texas.css">
+</head>
+<body>
+  <h1>Texas Hold'em Game</h1>
+  
+  <nav>
+    <a href="index.html">Back to Blackjack</a>
+  </nav>
+
+  <div id="money-display">Money: $100</div>
+  
+  <input type="number" id="bet-amount" placeholder="Enter bet amount">
+  <button id="place-bet">Place Bet</button>
+
+  <h3>Texas Hold'em</h3>
+
+  <div id="player-cards">Your Cards: </div>
+  <div id="community-cards">Community Cards: </div>
+
+  <button id="deal-cards" style="display:none;">Deal Cards</button>
+  <button id="check" style="display:none;">Check</button>
+  <button id="raise" style="display:none;">Raise</button>
+  <button id="fold" style="display:none;">Fold</button>
+
+  <script src="texas.ts"></script>
+</body>
+</html>

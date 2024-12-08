@@ -27,9 +27,14 @@ button:disabled {
   cursor: not-allowed;
 }
 
+#player-total {
+  font-size: 2rem; /* Increased font size for player's total */
+  margin-top: 20px;
+}
+
 #player-cards, #dealer-cards {
-  font-size: 5rem;
-  margin-top: 5px;
+  font-size: 3rem; /* Increased font size for card displays */
+  margin-top: 10px;
 }
 
 #game-log {

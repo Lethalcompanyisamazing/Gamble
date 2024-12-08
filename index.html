@@ -55,9 +55,8 @@
   <div id="player-cards">Your Cards: </div>
   <div id="player-total">Your Total: </div>
 
-  <!-- Dealer's Cards and Total -->
+  <!-- Dealer's Cards -->
   <div id="dealer-cards">Dealer's Cards: </div>
-  <div id="dealer-total">Dealer's Total: </div>
 
   <!-- Action Buttons -->
   <button id="hit" style="display:none;">Hit</button>
@@ -109,8 +108,9 @@
       playerTotal = calculateTotal(playerCards);
       dealerTotal = calculateTotal(dealerCards);
 
+      // Only display cards for the player and the dealer's first card
       document.getElementById("player-total").innerText = `Your Total: ${playerTotal}`;
-      document.getElementById("dealer-total").innerText = `Dealer's Total: ${dealerTotal}`;
+      document.getElementById("dealer-cards").innerText = `Dealer's Cards: ${dealerCards[0]} ?`;
 
       displayCards();
     }
@@ -147,7 +147,6 @@
     // Blackjack: Show cards and totals
     function displayCards() {
       document.getElementById("player-cards").innerText = `Your Cards: ${playerCards.join(' ')}`;
-      document.getElementById("dealer-cards").innerText = `Dealer's Cards: ${dealerCards[0]} ?`;
     }
 
     // Blackjack: Hit button functionality
@@ -176,7 +175,6 @@
         dealerTotal = calculateTotal(dealerCards);
       }
       document.getElementById("dealer-cards").innerText = `Dealer's Cards: ${dealerCards.join(' ')}`;
-      document.getElementById("dealer-total").innerText = `Dealer's Total: ${dealerTotal}`;
     }
 
     // Blackjack: Determine the winner
@@ -220,7 +218,6 @@
       document.getElementById("player-cards").innerText = "Your Cards: ";
       document.getElementById("dealer-cards").innerText = "Dealer's Cards: ";
       document.getElementById("player-total").innerText = "Your Total: ";
-      document.getElementById("dealer-total").innerText = "Dealer's Total: ";
     }
   </script>
 </body>

@@ -28,8 +28,8 @@ button:disabled {
 }
 
 #player-cards, #dealer-cards {
-  font-size: 1.5rem;
-  margin-top: 1.5px;
+  font-size: 5rem;
+  margin-top: 5px;
 }
 
 #game-log {

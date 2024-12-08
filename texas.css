@@ -1,33 +1,20 @@
 body {
   font-family: Arial, sans-serif;
   text-align: center;
-  padding: 20px;
-  background-color: #f0f0f0;
 }
 
 button {
-  background-color: black;
-  color: white;
-  font-size: 18px;
-  padding: 12px 24px;
-  border: none;
+  padding: 10px;
+  margin: 10px;
   cursor: pointer;
-  display: inline-block;
-}
-
-button:hover {
-  background-color: #444;
-}
-
-button:disabled {
-  background-color: gray;
 }
 
 #money-display {
   font-size: 24px;
-  margin: 20px;
+  margin-bottom: 20px;
 }
 
-#place-bet, #deal-cards, #check, #raise, #fold {
+#player-cards, #community-cards {
+  font-size: 32px;
   margin: 10px;
 }

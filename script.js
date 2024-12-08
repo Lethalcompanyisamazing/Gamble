@@ -168,12 +168,7 @@ document.getElementById("place-bet-roulette").addEventListener("click", function
   betAmount = parseInt(document.getElementById("bet-amount-roulette").value);
   betType = document.querySelector('input[name="bet-type"]:checked')?.value;
 
-  if (isNaN(betNumber) && !betType) {
-    alert("Please select a bet type or number.");
-    return;
-  }
-
-  if (isNaN(betAmount)) {
+  if (isNaN(betAmount) || betAmount <= 0) {
     alert("Please enter a valid bet amount.");
     return;
   }
@@ -221,10 +216,10 @@ document.getElementById("spin-wheel").addEventListener("click", function() {
     money += betAmount * 2;  // Win on Black
     document.getElementById("spin-result").innerText += ` You won! Your new balance is: $${money}`;
   } else {
-    document.getElementById("spin-result").innerText += ` You lost! Your new balance is: $${money}`;
+    document.getElementById("spin-result").innerText += " You lost!";
   }
 
-  // Hide spin button and show bet button again
+  // Reset for next round
   document.getElementById("place-bet-roulette").style.display = "inline";
   document.getElementById("spin-wheel").style.display = "none";
 });

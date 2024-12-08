@@ -1,26 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Texas Hold'em</title>
-  <link rel="stylesheet" href="texas.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack Game</title>
+    <style>
+        /* Basic styling for the game */
+        #bet-controls { margin-top: 10px; }
+        #player-cards { margin-bottom: 10px; }
+        #player-money { font-weight: bold; }
+    </style>
 </head>
 <body>
-  <div id="money-display">Money: $100</div>
-  <div id="player-cards">Your Cards: </div>
-  <div id="community-cards">Community Cards: </div>
 
-  <div>
-    <input type="number" id="bet-amount" placeholder="Enter Bet Amount">
-    <button id="place-bet">Place Bet</button>
-  </div>
+    <div id="blackjack-game">
+        <!-- Display Player's Cards -->
+        <div id="player-cards">
+            <span id="player-card-1">Card 1</span> 
+            <span id="player-card-2">Card 2</span>
+        </div>
 
-  <button id="deal-cards" style="display:none;">Deal Cards</button>
-  <button id="check" style="display:none;">Check</button>
-  <button id="raise" style="display:none;">Raise</button>
-  <button id="fold" style="display:none;">Fold</button>
+        <!-- Bet Controls (Fold, Raise, Check buttons) -->
+        <div id="bet-controls">
+            <button id="fold-button">Fold</button>
+            <button id="raise-button">Raise</button>
+            <button id="check-button">Check</button>
+        </div>
 
-  <script src="texas.js"></script>
+        <!-- Display Player's Money -->
+        <div id="money-display">
+            Money: $<span id="player-money">100</span>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>

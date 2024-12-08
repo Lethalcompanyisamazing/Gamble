@@ -54,8 +54,31 @@ document.getElementById("check").addEventListener("click", function () {
 });
 
 document.getElementById("raise").addEventListener("click", function () {
-  alert("You raised your bet.");
-  resetGame();
+  let raiseAmount = parseInt(prompt("Enter the amount you'd like to raise:"));
+
+  if (isNaN(raiseAmount) || raiseAmount <= 0) {
+    alert("Please enter a valid amount to raise.");
+    return;
+  }
+
+  if (raiseAmount > money) {
+    alert("You don't have enough money to raise this much.");
+    return;
+  }
+
+  // Add the raise to the player's bet and deduct from their money
+  money -= raiseAmount;
+  playerBet += raiseAmount;
+
+  // Optionally, make the AI raise here or call the same raise logic for AI
+  aiMoney -= raiseAmount; // Simple AI raises same amount as the player
+
+  document.getElementById("money-display").innerText = `Money: $${money}`;
+  alert(`You raised your bet by $${raiseAmount}`);
+
+  // Continue the game after the raise (showing new bet)
+  displayCards();
+  determineWinner();
 });
 
 document.getElementById("fold").addEventListener("click", function () {
@@ -75,6 +98,7 @@ function displayCards() {
   document.getElementById("player-cards").innerText = `Your Cards: ${playerCards.join(' ')}`;
   document.getElementById("community-cards").innerText = `Community Cards: ${communityCards.join(' ')}`;
   document.getElementById("ai-cards").innerText = `AI's Cards: ${aiCards.join(' ')}`;
+  document.getElementById("current-bet").innerText = `Current Bet: $${playerBet}`;
 }
 
 function resetGame() {
@@ -87,9 +111,11 @@ function resetGame() {
   playerCards = [];
   aiCards = [];
   communityCards = [];
+  playerBet = 0;
   document.getElementById("player-cards").innerText = "Your Cards: ";
   document.getElementById("community-cards").innerText = "Community Cards: ";
   document.getElementById("ai-cards").innerText = "AI's Cards: ";
+  document.getElementById("current-bet").innerText = "Current Bet: $0";
 }
 
 function determineWinner() {
@@ -98,8 +124,10 @@ function determineWinner() {
 
   if (playerHand.rank > aiHand.rank) {
     alert("You win!");
+    money += playerBet * 2; // Player wins double the bet amount
   } else if (playerHand.rank < aiHand.rank) {
     alert("AI wins!");
+    aiMoney += playerBet * 2; // AI wins double the bet amount
   } else {
     // If hands are the same rank, compare highest card
     const playerHighCard = getHighCard(playerCards.concat(communityCards));
@@ -107,12 +135,15 @@ function determineWinner() {
 
     if (playerHighCard > aiHighCard) {
       alert("You win with the highest card!");
+      money += playerBet * 2; // Player wins double the bet amount
     } else if (playerHighCard < aiHighCard) {
       alert("AI wins with the highest card!");
+      aiMoney += playerBet * 2; // AI wins double the bet amount
     } else {
       alert("It's a tie!");
     }
   }
+  resetGame();
 }
 
 function evaluateHand(cards) {

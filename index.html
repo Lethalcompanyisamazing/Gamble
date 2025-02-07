@@ -5,16 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Slot Machine Game</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            background: repeating-linear-gradient(
+                45deg,
+                #ddd 0px,
+                #ddd 25px,
+                #fff 25px,
+                #fff 50px
+            );
+        }
         .slot { font-size: 50px; margin: 10px; }
         .machine-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
-        .machine { text-align: center; padding: 10px; border: 2px solid black; border-radius: 10px; }
+        .machine { text-align: center; padding: 10px; border: 2px solid black; border-radius: 10px; background-color: white; }
         button { padding: 10px 20px; font-size: 16px; cursor: pointer; display: block; margin: 10px auto; }
     </style>
 </head>
 <body>
 
-    <h1>Slot Machine Game</h1>
+    <h1 id="title">Slot Machine Game</h1>
     <p>Money: $<span id="money">100</span></p>
 
     <div id="machines" class="machine-container">
@@ -32,6 +42,140 @@
     <button id="buy-auto-spinner-btn">Buy Auto Spinner ($30)</button>
     <p id="message"></p>
 
-    <script src="script.js"></script>
+    <script>
+        let money = 100;
+        let machinePrice = 50;
+        let autoSpinnerPrice = 30;
+        let autoSpinnerEnabled = false;
+        const symbols = ["🍒", "🍉", "🍋", "7️⃣", "❌"];
+
+        document.getElementById("money").textContent = money;
+
+        function createSlotMachine() {
+            let machine = document.createElement("div");
+            machine.classList.add("machine");
+
+            let slotsDiv = document.createElement("div");
+            slotsDiv.classList.add("slots");
+
+            let slot1 = document.createElement("span");
+            let slot2 = document.createElement("span");
+            let slot3 = document.createElement("span");
+            slot1.classList.add("slot");
+            slot2.classList.add("slot");
+            slot3.classList.add("slot");
+            slot1.textContent = "❓";
+            slot2.textContent = "❓";
+            slot3.textContent = "❓";
+
+            slotsDiv.appendChild(slot1);
+            slotsDiv.appendChild(slot2);
+            slotsDiv.appendChild(slot3);
+            machine.appendChild(slotsDiv);
+
+            let spinButton = document.createElement("button");
+            spinButton.textContent = "Spin ($10)";
+            spinButton.classList.add("spin-btn");
+            machine.appendChild(spinButton);
+
+            document.getElementById("machines").appendChild(machine);
+
+            spinButton.addEventListener("click", function() {
+                spinMachine(slot1, slot2, slot3);
+            });
+        }
+
+        function spinMachine(slot1, slot2, slot3) {
+            if (money < 10) {
+                document.getElementById("message").textContent = "Not enough money!";
+                return;
+            }
+
+            money -= 10;
+            document.getElementById("money").textContent = money;
+
+            let matchChance = Math.random();
+
+            let symbol;
+            if (matchChance < 0.6) { 
+                symbol = symbols[Math.floor(Math.random() * symbols.length)];
+                slot1.textContent = symbol;
+                slot2.textContent = symbol;
+                slot3.textContent = symbol;
+            } else { 
+                slot1.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                slot2.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                slot3.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+            }
+
+            let rewardMultiplier = 0;
+            if (slot1.textContent === slot2.textContent && slot2.textContent === slot3.textContent) {
+                if (slot1.textContent === "🍒") rewardMultiplier = 1.25;
+                else if (slot1.textContent === "🍉") rewardMultiplier = 1.50;
+                else if (slot1.textContent === "🍋") rewardMultiplier = 1.75;
+                else if (slot1.textContent === "7️⃣") rewardMultiplier = 2.50;
+            }
+
+            if (rewardMultiplier > 0) {
+                let winnings = Math.floor(money * rewardMultiplier * 0.1);
+                money += winnings;
+                document.getElementById("message").textContent = `You won $${winnings}! 🎉`;
+            } else {
+                document.getElementById("message").textContent = "You lost! 😢";
+            }
+
+            document.getElementById("money").textContent = money;
+        }
+
+        document.querySelector(".spin-btn").addEventListener("click", function() {
+            let slots = document.querySelector(".machine .slots").children;
+            spinMachine(slots[0], slots[1], slots[2]);
+        });
+
+        document.getElementById("buy-machine-btn").addEventListener("click", function() {
+            if (money < machinePrice) {
+                document.getElementById("message").textContent = "Not enough money to buy a new slot machine!";
+                return;
+            }
+
+            money -= machinePrice;
+            machinePrice = Math.floor(machinePrice * 1.5);
+            
+            createSlotMachine();
+
+            document.getElementById("money").textContent = money;
+            document.getElementById("buy-machine-btn").textContent = `Buy Slot Machine ($${machinePrice})`;
+        });
+
+        document.getElementById("buy-auto-spinner-btn").addEventListener("click", function() {
+            if (money < autoSpinnerPrice) {
+                document.getElementById("message").textContent = "Not enough money to buy an auto spinner!";
+                return;
+            }
+
+            money -= autoSpinnerPrice;
+            autoSpinnerPrice = Math.floor(autoSpinnerPrice * 1.5);
+            autoSpinnerEnabled = true;
+
+            document.getElementById("money").textContent = money;
+            document.getElementById("buy-auto-spinner-btn").textContent = `Buy Auto Spinner ($${autoSpinnerPrice})`;
+
+            setInterval(function() {
+                if (autoSpinnerEnabled) {
+                    let slots = document.querySelector(".machine .slots").children;
+                    spinMachine(slots[0], slots[1], slots[2]);
+                }
+            }, 2000);
+        });
+
+        document.getElementById("title").addEventListener("click", function() {
+            money += 100;
+            document.getElementById("money").textContent = money;
+            document.getElementById("message").textContent = "Easter egg found! You got $100!";
+        });
+
+        createSlotMachine();
+    </script>
+
 </body>
 </html>

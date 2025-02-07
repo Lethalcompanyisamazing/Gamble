@@ -1,5 +1,5 @@
 let money = 100;
-const symbols = ["🍒", "🍒", "🍉", "🍉", "🍋", "🍋", "7️⃣", "❌", "❌"]; 
+const symbols = ["🍒", "🍉", "🍋", "7️⃣", "❌"];
 
 document.getElementById("spin-btn").addEventListener("click", function() {
     if (money < 10) {
@@ -10,9 +10,16 @@ document.getElementById("spin-btn").addEventListener("click", function() {
     money -= 10;
     document.getElementById("money").textContent = money;
 
-    let slot1 = symbols[Math.floor(Math.random() * symbols.length)];
-    let slot2 = symbols[Math.floor(Math.random() * symbols.length)];
-    let slot3 = symbols[Math.floor(Math.random() * symbols.length)];
+    let matchChance = Math.random(); // Determines if we force a match
+    let slot1, slot2, slot3;
+
+    if (matchChance < 0.4) {  // 40% chance of getting a winning match
+        slot1 = slot2 = slot3 = symbols[Math.floor(Math.random() * symbols.length)];
+    } else {
+        slot1 = symbols[Math.floor(Math.random() * symbols.length)];
+        slot2 = symbols[Math.floor(Math.random() * symbols.length)];
+        slot3 = symbols[Math.floor(Math.random() * symbols.length)];
+    }
 
     document.getElementById("slot1").textContent = slot1;
     document.getElementById("slot2").textContent = slot2;

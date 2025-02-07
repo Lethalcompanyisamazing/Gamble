@@ -1,9 +1,11 @@
-body { 
-    font-family: Arial, sans-serif; 
-    text-align: center; 
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
     background: repeating-linear-gradient(
-        45deg, 
-        #d1d1d1 0px, #d1d1d1 25px, 
-        #ffffff 25px, #ffffff 50px
+        45deg,
+        #ddd 0px,
+        #ddd 25px,
+        #fff 25px,
+        #fff 50px
     );
 }

@@ -13,7 +13,7 @@ document.getElementById("spin-btn").addEventListener("click", function() {
     let slot1, slot2, slot3;
     let matchChance = Math.random();
 
-    if (matchChance < 0.6) {  // 60% chance of getting a matching set
+    if (matchChance < 1) {  // 60% chance of getting a matching set
         slot1 = slot2 = slot3 = symbols[Math.floor(Math.random() * symbols.length)];
     } else { // 40% chance of random symbols (a possible loss)
         slot1 = symbols[Math.floor(Math.random() * symbols.length)];

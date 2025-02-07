@@ -15,11 +15,21 @@
                 #165016 75% 100%
             );
             background-size: 100px 100px;
+            position: relative;
+            min-height: 100vh;
         }
         .slot { font-size: 50px; margin: 10px; }
         .machine-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
         .machine { text-align: center; padding: 10px; border: 2px solid black; border-radius: 10px; background: white; }
         button { padding: 10px 20px; font-size: 16px; cursor: pointer; display: block; margin: 10px auto; }
+        .footer {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            font-size: 12px;
+            color: white;
+            opacity: 0.7;
+        }
     </style>
 </head>
 <body>
@@ -41,6 +51,8 @@
     <button id="buy-machine-btn">Buy Slot Machine ($50)</button>
     <button id="buy-auto-spinner-btn">Buy Auto Spinner ($30)</button>
     <p id="message"></p>
+
+    <div class="footer">Made by Nathan Wingard</div>
 
     <script>
         let money = 100;

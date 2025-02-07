@@ -10,12 +10,12 @@ document.getElementById("spin-btn").addEventListener("click", function() {
     money -= 10;
     document.getElementById("money").textContent = money;
 
-    let matchChance = Math.random(); // Determines if we force a match
     let slot1, slot2, slot3;
+    let matchChance = Math.random();
 
-    if (matchChance < 0.4) {  // 40% chance of getting a winning match
+    if (matchChance < 0.6) {  // 60% chance of getting a matching set
         slot1 = slot2 = slot3 = symbols[Math.floor(Math.random() * symbols.length)];
-    } else {
+    } else { // 40% chance of random symbols (a possible loss)
         slot1 = symbols[Math.floor(Math.random() * symbols.length)];
         slot2 = symbols[Math.floor(Math.random() * symbols.length)];
         slot3 = symbols[Math.floor(Math.random() * symbols.length)];
@@ -36,9 +36,9 @@ document.getElementById("spin-btn").addEventListener("click", function() {
     if (rewardMultiplier > 0) {
         let winnings = Math.floor(10 * rewardMultiplier);
         money += winnings;
-        document.getElementById("message").textContent = `You won $${winnings}!`;
+        document.getElementById("message").textContent = `You won $${winnings}! 🎉`;
     } else {
-        document.getElementById("message").textContent = "You lost!";
+        document.getElementById("message").textContent = "You lost! 😢";
     }
 
     document.getElementById("money").textContent = money;

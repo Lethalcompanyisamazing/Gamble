@@ -68,14 +68,14 @@ function spinMachine(slot1, slot2, slot3) {
 
     let rewardMultiplier = 0;
     if (slot1.textContent === slot2.textContent && slot2.textContent === slot3.textContent) {
-        if (slot1.textContent === "🍒") rewardMultiplier = 1.25;
-        else if (slot1.textContent === "🍉") rewardMultiplier = 1.50;
-        else if (slot1.textContent === "🍋") rewardMultiplier = 1.75;
-        else if (slot1.textContent === "7️⃣") rewardMultiplier = 2.50;
+        if (slot1.textContent === "🍒") rewardMultiplier = 0.25; // 25% of money
+        else if (slot1.textContent === "🍉") rewardMultiplier = 0.5; // 50% of money
+        else if (slot1.textContent === "🍋") rewardMultiplier = 0.75; // 75% of money
+        else if (slot1.textContent === "7️⃣") rewardMultiplier = 1.5; // 150% of money
     }
 
     if (rewardMultiplier > 0) {
-        let winnings = Math.floor(10 * rewardMultiplier);
+        let winnings = Math.floor(money * rewardMultiplier);
         money += winnings;
         document.getElementById("message").textContent = `You won $${winnings}! 🎉`;
     } else {

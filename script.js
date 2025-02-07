@@ -1,5 +1,7 @@
 let money = 100;
 let machinePrice = 50;
+let autoSpinnerPrice = 30;
+let autoSpinnerEnabled = false;
 const symbols = ["🍒", "🍉", "🍋", "7️⃣", "❌"];
 
 document.getElementById("money").textContent = money;
@@ -103,6 +105,29 @@ document.getElementById("buy-machine-btn").addEventListener("click", function() 
 
     document.getElementById("money").textContent = money;
     document.getElementById("buy-machine-btn").textContent = `Buy Slot Machine ($${machinePrice})`;
+});
+
+// Event listener for buying auto spinner
+document.getElementById("buy-auto-spinner-btn").addEventListener("click", function() {
+    if (money < autoSpinnerPrice) {
+        document.getElementById("message").textContent = "Not enough money to buy an auto spinner!";
+        return;
+    }
+
+    money -= autoSpinnerPrice;
+    autoSpinnerPrice = Math.floor(autoSpinnerPrice * 1.5);
+    autoSpinnerEnabled = true;
+
+    document.getElementById("money").textContent = money;
+    document.getElementById("buy-auto-spinner-btn").textContent = `Buy Auto Spinner ($${autoSpinnerPrice})`;
+
+    // Start the auto spinner after purchase
+    setInterval(function() {
+        if (autoSpinnerEnabled) {
+            let slots = document.querySelector(".machine .slots").children;
+            spinMachine(slots[0], slots[1], slots[2]);
+        }
+    }, 2000); // Spin every 2 seconds
 });
 
 // Initialize the game with one machine

@@ -1,5 +1,5 @@
 let money = 100;
-const symbols = ["🍒", "🍉", "🍋", "7️⃣", "❌"]; // Cherries, Watermelon, Lemon, 777, and Lose
+const symbols = ["🍒", "🍒", "🍉", "🍉", "🍋", "🍋", "7️⃣", "❌", "❌"]; 
 
 document.getElementById("spin-btn").addEventListener("click", function() {
     if (money < 10) {
@@ -7,7 +7,7 @@ document.getElementById("spin-btn").addEventListener("click", function() {
         return;
     }
 
-    money -= 10; // Cost to spin
+    money -= 10;
     document.getElementById("money").textContent = money;
 
     let slot1 = symbols[Math.floor(Math.random() * symbols.length)];

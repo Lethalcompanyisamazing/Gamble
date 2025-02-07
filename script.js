@@ -1,8 +1,7 @@
 let money = 100;
 let machinePrice = 50;
 let autoSpinnerPrice = 30;
-let autoSpinnerCount = 0;
-let autoSpinnerIntervals = [];
+let autoSpinnerEnabled = false;
 const symbols = ["🍒", "🍉", "🍋", "7️⃣", "❌"];
 
 document.getElementById("money").textContent = money;
@@ -38,7 +37,7 @@ function createSlotMachine() {
     document.getElementById("machines").appendChild(machine);
 
     // Attach event listener to the new spin button
-    spinButton.addEventListener("click", function () {
+    spinButton.addEventListener("click", function() {
         spinMachine(slot1, slot2, slot3);
     });
 }
@@ -61,7 +60,7 @@ function spinMachine(slot1, slot2, slot3) {
         slot1.textContent = symbol;
         slot2.textContent = symbol;
         slot3.textContent = symbol;
-    } else {
+    } else { 
         slot1.textContent = symbols[Math.floor(Math.random() * symbols.length)];
         slot2.textContent = symbols[Math.floor(Math.random() * symbols.length)];
         slot3.textContent = symbols[Math.floor(Math.random() * symbols.length)];
@@ -86,8 +85,14 @@ function spinMachine(slot1, slot2, slot3) {
     document.getElementById("money").textContent = money;
 }
 
+// Add event listener to the first spin button
+document.querySelector(".spin-btn").addEventListener("click", function() {
+    let slots = document.querySelector(".machine .slots").children;
+    spinMachine(slots[0], slots[1], slots[2]);
+});
+
 // Event listener for buying new slot machines
-document.getElementById("buy-machine-btn").addEventListener("click", function () {
+document.getElementById("buy-machine-btn").addEventListener("click", function() {
     if (money < machinePrice) {
         document.getElementById("message").textContent = "Not enough money to buy a new slot machine!";
         return;
@@ -95,7 +100,7 @@ document.getElementById("buy-machine-btn").addEventListener("click", function ()
 
     money -= machinePrice;
     machinePrice = Math.floor(machinePrice * 1.5);
-
+    
     createSlotMachine();
 
     document.getElementById("money").textContent = money;
@@ -103,7 +108,7 @@ document.getElementById("buy-machine-btn").addEventListener("click", function ()
 });
 
 // Event listener for buying auto spinner
-document.getElementById("buy-auto-spinner-btn").addEventListener("click", function () {
+document.getElementById("buy-auto-spinner-btn").addEventListener("click", function() {
     if (money < autoSpinnerPrice) {
         document.getElementById("message").textContent = "Not enough money to buy an auto spinner!";
         return;
@@ -111,20 +116,25 @@ document.getElementById("buy-auto-spinner-btn").addEventListener("click", functi
 
     money -= autoSpinnerPrice;
     autoSpinnerPrice = Math.floor(autoSpinnerPrice * 1.5);
-    autoSpinnerCount++;
+    autoSpinnerEnabled = true;
 
     document.getElementById("money").textContent = money;
     document.getElementById("buy-auto-spinner-btn").textContent = `Buy Auto Spinner ($${autoSpinnerPrice})`;
 
-    let interval = setInterval(() => {
-        let machines = document.querySelectorAll(".machine");
-        machines.forEach(machine => {
-            let slots = machine.querySelector(".slots").children;
+    // Start the auto spinner after purchase
+    setInterval(function() {
+        if (autoSpinnerEnabled) {
+            let slots = document.querySelector(".machine .slots").children;
             spinMachine(slots[0], slots[1], slots[2]);
-        });
-    }, 2000);
+        }
+    }, 2000); // Spin every 2 seconds
+});
 
-    autoSpinnerIntervals.push(interval);
+// Easter egg: Clicking the title gives $100
+document.querySelector("h1").addEventListener("click", function() {
+    money += 100;
+    document.getElementById("money").textContent = money;
+    document.getElementById("message").textContent = "Easter Egg! You got $100 🎉";
 });
 
 // Initialize the game with one machine

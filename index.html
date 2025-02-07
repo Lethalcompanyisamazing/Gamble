@@ -1,1 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slot Machine</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        #slot-machine {
+            margin-top: 20px;
+        }
+        .slot {
+            font-size: 2em;
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 2px solid black;
+            margin: 5px;
+            text-align: center;
+            line-height: 50px;
+        }
+        #spin-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Slot Machine</h1>
+    <p>Money: $<span id="money">100</span></p>
+    <div id="slot-machine">
+        <div class="slot" id="slot1">?</div>
+        <div class="slot" id="slot2">?</div>
+        <div class="slot" id="slot3">?</div>
+    </div>
+    <button id="spin-btn">Spin ($10)</button>
+    <p id="message"></p>
 
+    <script src="script.js"></script>
+</body>
+</html>

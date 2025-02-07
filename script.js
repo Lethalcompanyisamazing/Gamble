@@ -1,45 +1,76 @@
 let money = 100;
+let machineCount = 1;
+let machinePrice = 50;
 const symbols = ["🍒", "🍉", "🍋", "7️⃣", "❌"];
 
 document.getElementById("spin-btn").addEventListener("click", function() {
-    if (money < 10) {
+    let spinCost = 10 * machineCount;
+    if (money < spinCost) {
         document.getElementById("message").textContent = "Not enough money!";
         return;
     }
 
-    money -= 10;
+    money -= spinCost;
     document.getElementById("money").textContent = money;
 
-    let slot1, slot2, slot3;
-    let matchChance = Math.random();
+    let machines = document.querySelectorAll(".machine");
+    let totalWinnings = 0;
 
-    if (matchChance < 0.4) {  // 60% chance of getting a matching set
-        slot1 = slot2 = slot3 = symbols[Math.floor(Math.random() * symbols.length)];
-    } else { // 40% chance of random symbols (a possible loss)
-        slot1 = symbols[Math.floor(Math.random() * symbols.length)];
-        slot2 = symbols[Math.floor(Math.random() * symbols.length)];
-        slot3 = symbols[Math.floor(Math.random() * symbols.length)];
-    }
+    machines.forEach(machine => {
+        let slot1, slot2, slot3;
+        let matchChance = Math.random();
 
-    document.getElementById("slot1").textContent = slot1;
-    document.getElementById("slot2").textContent = slot2;
-    document.getElementById("slot3").textContent = slot3;
+        if (matchChance < 0.6) { // 60% chance to get a match
+            slot1 = slot2 = slot3 = symbols[Math.floor(Math.random() * symbols.length)];
+        } else { 
+            slot1 = symbols[Math.floor(Math.random() * symbols.length)];
+            slot2 = symbols[Math.floor(Math.random() * symbols.length)];
+            slot3 = symbols[Math.floor(Math.random() * symbols.length)];
+        }
 
-    let rewardMultiplier = 0;
-    if (slot1 === slot2 && slot2 === slot3) {
-        if (slot1 === "🍒") rewardMultiplier = 1.25;
-        else if (slot1 === "🍉") rewardMultiplier = 1.50;
-        else if (slot1 === "🍋") rewardMultiplier = 1.75;
-        else if (slot1 === "7️⃣") rewardMultiplier = 2.50;
-    }
+        machine.children[0].textContent = slot1;
+        machine.children[1].textContent = slot2;
+        machine.children[2].textContent = slot3;
 
-    if (rewardMultiplier > 0) {
-        let winnings = Math.floor(10 * rewardMultiplier);
-        money += winnings;
-        document.getElementById("message").textContent = `You won $${winnings}! 🎉`;
+        let rewardMultiplier = 0;
+        if (slot1 === slot2 && slot2 === slot3) {
+            if (slot1 === "🍒") rewardMultiplier = 1.25;
+            else if (slot1 === "🍉") rewardMultiplier = 1.50;
+            else if (slot1 === "🍋") rewardMultiplier = 1.75;
+            else if (slot1 === "7️⃣") rewardMultiplier = 2.50;
+        }
+
+        if (rewardMultiplier > 0) {
+            let winnings = Math.floor(10 * rewardMultiplier);
+            totalWinnings += winnings;
+        }
+    });
+
+    if (totalWinnings > 0) {
+        money += totalWinnings;
+        document.getElementById("message").textContent = `You won $${totalWinnings}! 🎉`;
     } else {
         document.getElementById("message").textContent = "You lost! 😢";
     }
 
     document.getElementById("money").textContent = money;
+});
+
+document.getElementById("buy-machine-btn").addEventListener("click", function() {
+    if (money < machinePrice) {
+        document.getElementById("message").textContent = "Not enough money to buy a new slot machine!";
+        return;
+    }
+
+    money -= machinePrice;
+    machineCount++;
+    machinePrice = Math.floor(machinePrice * 1.5);
+    
+    let newMachine = document.createElement("div");
+    newMachine.classList.add("machine");
+    newMachine.innerHTML = `<span class="slot">❓</span> <span class="slot">❓</span> <span class="slot">❓</span>`;
+    document.getElementById("machines").appendChild(newMachine);
+
+    document.getElementById("money").textContent = money;
+    document.getElementById("buy-machine-btn").textContent = `Buy Slot Machine ($${machinePrice})`;
 });

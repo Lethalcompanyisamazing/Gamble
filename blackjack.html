@@ -3,129 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blackjack</title>
+    <title>Blackjack Game</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: darkgreen; color: white; }
-        .container { max-width: 600px; margin: auto; padding: 20px; background: black; border-radius: 10px; }
-        .card { display: inline-block; margin: 5px; padding: 10px; background: white; color: black; border-radius: 5px; }
-        button { padding: 10px; margin: 10px; font-size: 16px; }
-        #money { font-size: 20px; font-weight: bold; }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(45deg, darkred 25%, darkgreen 25%, darkgreen 50%, darkred 50%, darkred 75%, darkgreen 75%, darkgreen 100%);
+            background-size: 100px 100px;
+            color: white;
+        }
+        #game-container {
+            background: black;
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        #slots-arrow {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            font-size: 50px;
+            text-decoration: none;
+            color: white;
+            background: black;
+            padding: 10px 20px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px white;
+            transform: rotate(180deg);
+        }
+        #slots-arrow:hover {
+            background: darkgreen;
+            box-shadow: 0 0 15px green;
+        }
+        #credits {
+            position: fixed;
+            bottom: 5px;
+            right: 10px;
+            font-size: 12px;
+            color: white;
+        }
     </style>
 </head>
 <body>
 
-    <h1>Blackjack</h1>
+    <h1>Blackjack Game</h1>
     <p>Money: $<span id="money">100</span></p>
-    <div class="container">
-        <h2>Your Hand</h2>
-        <div id="player-hand"></div>
-        <h2>Dealer's Hand</h2>
-        <div id="dealer-hand"></div>
+    
+    <div id="game-container">
+        <p>Your Hand: <span id="player-hand">0</span></p>
+        <p>Dealer's Hand: <span id="dealer-hand">0</span></p>
+        <button id="hit-btn">Hit</button>
+        <button id="stand-btn">Stand</button>
         <p id="message"></p>
-        <button id="hit">Hit</button>
-        <button id="stand">Stand</button>
-        <button id="new-game">New Game ($10 Bet)</button>
     </div>
 
+    <a href="index.html" id="slots-arrow">←</a>
+    <p id="credits">Made by Nathan Wingard</p>
+
     <script>
-        let money = localStorage.getItem("blackjackMoney") ? parseInt(localStorage.getItem("blackjackMoney")) : 100;
-        let deck, playerHand, dealerHand, playerTurn;
+        let money = 100;
         document.getElementById("money").innerText = money;
 
-        function createDeck() {
-            let suits = ["♠", "♥", "♦", "♣"];
-            let values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
-            let deck = [];
-            for (let suit of suits) {
-                for (let value of values) {
-                    deck.push({ value, suit });
-                }
+        let playerHand = 0;
+        let dealerHand = 0;
+        
+        function getCard() {
+            return Math.floor(Math.random() * 11) + 1;
+        }
+
+        document.getElementById("hit-btn").addEventListener("click", function() {
+            playerHand += getCard();
+            document.getElementById("player-hand").innerText = playerHand;
+
+            if (playerHand > 21) {
+                document.getElementById("message").innerText = "You Bust! You lose $10.";
+                money -= 10;
+                document.getElementById("money").innerText = money;
             }
-            return deck.sort(() => Math.random() - 0.5);
-        }
+        });
 
-        function cardValue(card) {
-            if (["J", "Q", "K"].includes(card.value)) return 10;
-            if (card.value === "A") return 11;
-            return parseInt(card.value);
-        }
+        document.getElementById("stand-btn").addEventListener("click", function() {
+            dealerHand = getCard() + getCard();
+            document.getElementById("dealer-hand").innerText = dealerHand;
 
-        function handValue(hand) {
-            let total = hand.reduce((sum, card) => sum + cardValue(card), 0);
-            let aces = hand.filter(card => card.value === "A").length;
-            while (total > 21 && aces > 0) {
-                total -= 10;
-                aces--;
-            }
-            return total;
-        }
-
-        function updateUI() {
-            document.getElementById("player-hand").innerHTML = playerHand.map(card => `<span class="card">${card.value}${card.suit}</span>`).join("");
-            document.getElementById("dealer-hand").innerHTML = dealerHand.map(card => `<span class="card">${card.value}${card.suit}</span>`).join("");
-            document.getElementById("money").innerText = money;
-        }
-
-        function startGame() {
-            if (money < 10) {
-                document.getElementById("message").innerText = "Not enough money!";
-                return;
-            }
-            money -= 10;
-            deck = createDeck();
-            playerHand = [deck.pop(), deck.pop()];
-            dealerHand = [deck.pop(), deck.pop()];
-            playerTurn = true;
-            document.getElementById("message").innerText = "";
-            updateUI();
-        }
-
-        function hit() {
-            if (!playerTurn) return;
-            playerHand.push(deck.pop());
-            updateUI();
-            if (handValue(playerHand) > 21) {
-                document.getElementById("message").innerText = "You busted!";
-                playerTurn = false;
-            }
-        }
-
-        function stand() {
-            if (!playerTurn) return;
-            playerTurn = false;
-            while (handValue(dealerHand) < 17) {
-                dealerHand.push(deck.pop());
-            }
-            updateUI();
-            checkWinner();
-        }
-
-        function checkWinner() {
-            let playerTotal = handValue(playerHand);
-            let dealerTotal = handValue(dealerHand);
-            let message = "";
-
-            if (playerTotal > 21) {
-                message = "You busted! Dealer wins.";
-            } else if (dealerTotal > 21 || playerTotal > dealerTotal) {
+            if (dealerHand > 21 || playerHand > dealerHand) {
+                document.getElementById("message").innerText = "You Win! You gain $20.";
                 money += 20;
-                message = "You win! +$20";
-            } else if (playerTotal < dealerTotal) {
-                message = "Dealer wins!";
             } else {
-                money += 10;
-                message = "It's a tie! Bet returned.";
+                document.getElementById("message").innerText = "Dealer Wins! You lose $10.";
+                money -= 10;
             }
+            document.getElementById("money").innerText = money;
+        });
 
-            document.getElementById("message").innerText = message;
-            localStorage.setItem("blackjackMoney", money);
-            updateUI();
-        }
-
-        document.getElementById("new-game").addEventListener("click", startGame);
-        document.getElementById("hit").addEventListener("click", hit);
-        document.getElementById("stand").addEventListener("click", stand);
     </script>
-
 </body>
 </html>

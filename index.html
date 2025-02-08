@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Slot Machine Game</title>
+    <title>My Casino</title>
     <style>
         body { 
             font-family: Arial, sans-serif; 
@@ -16,7 +16,7 @@
         .machine { text-align: center; padding: 10px; border: 2px solid black; border-radius: 10px; background: white; }
         button { padding: 10px 20px; font-size: 16px; cursor: pointer; display: block; margin: 10px auto; }
         
-        /* Blackjack Arrow (Hidden by Default) */
+        /* Blackjack Arrow */
         #blackjack-arrow {
             position: fixed;
             bottom: 20px;
@@ -71,7 +71,7 @@
 </head>
 <body>
 
-    <h1 id="title">Slot Machine Game</h1>
+    <h1 id="title" contenteditable="true">My Casino</h1>
     <p>Money: $<span id="money">100</span></p>
 
     <div id="machines" class="machine-container">
@@ -121,27 +121,15 @@
             updateMoney();
 
             let slots = document.querySelectorAll(".slot");
-            let symbols = ["🍒", "🍒", "🍒", "🍋", "🍋", "🔔", "🔔", "⭐", "⭐", "7️⃣", "7️⃣", "7️⃣"];
-            let result = [];
+            let symbols = ["🍒", "🍋", "🔔", "⭐", "7️⃣"];
+            let chosenSymbol = symbols[Math.floor(Math.random() * symbols.length)]; // Pick one winning symbol
 
-            slots.forEach(slot => {
-                let symbol = symbols[Math.floor(Math.random() * symbols.length)];
-                slot.innerText = symbol;
-                result.push(symbol);
-            });
+            slots.forEach(slot => slot.innerText = chosenSymbol); // All slots match
 
-            if (result[0] === result[1] && result[1] === result[2]) {
-                let winnings = (result[0] === "7️⃣") ? 150 : (result[0] === "⭐") ? 100 : 50;
-                money += winnings;
-                document.getElementById("message").innerText = "🎉 You won $" + winnings + "!";
-            } else if (result[0] === result[1] || result[1] === result[2] || result[0] === result[2]) {
-                let winnings = 20;
-                money += winnings;
-                document.getElementById("message").innerText = "✨ Small win! You got $" + winnings + "!";
-            } else {
-                document.getElementById("message").innerText = "Try again!";
-            }
-
+            let winnings = (chosenSymbol === "7️⃣") ? 150 : (chosenSymbol === "⭐") ? 100 : 50;
+            money += winnings;
+            document.getElementById("message").innerText = "🎉 You won $" + winnings + "!";
+            
             updateMoney();
         });
 
@@ -155,11 +143,6 @@
             } else {
                 alert("You need $2500 to unlock Blackjack!");
             }
-        });
-
-        document.getElementById("title").addEventListener("click", function() {
-            money += 100;
-            updateMoney();
         });
 
         document.getElementById("settings-cog").addEventListener("click", function() {

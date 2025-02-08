@@ -49,6 +49,14 @@
             font-size: 12px;
             color: white;
         }
+        #bet-container {
+            margin-top: 20px;
+            padding: 10px;
+        }
+        #bet-value {
+            font-size: 18px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -56,11 +64,18 @@
     <h1>Blackjack Game</h1>
     <p>Money: $<span id="money">100</span></p>
     
+    <div id="bet-container">
+        <p>Starting Bet: $<span id="bet-value">10</span></p>
+        <input type="range" id="bet-slider" min="1" max="100" value="10">
+        <p id="bet-message"></p>
+        <button id="new-game-btn">New Game</button>
+    </div>
+
     <div id="game-container">
         <p>Your Hand: <span id="player-hand">0</span></p>
         <p>Dealer's Hand: <span id="dealer-hand">0</span></p>
-        <button id="hit-btn">Hit</button>
-        <button id="stand-btn">Stand</button>
+        <button id="hit-btn" disabled>Hit</button>
+        <button id="stand-btn" disabled>Stand</button>
         <p id="message"></p>
     </div>
 
@@ -69,40 +84,83 @@
 
     <script>
         let money = 100;
-        document.getElementById("money").innerText = money;
-
         let playerHand = 0;
         let dealerHand = 0;
-        
+        let betAmount = 10;
+
+        document.getElementById("money").innerText = money;
+        document.getElementById("bet-slider").max = money;
+        document.getElementById("bet-slider").addEventListener("input", function() {
+            betAmount = parseInt(this.value);
+            document.getElementById("bet-value").innerText = betAmount;
+            if (betAmount <= 0) {
+                document.getElementById("bet-message").innerText = "Bet must be above 0!";
+            } else if (betAmount > money) {
+                document.getElementById("bet-message").innerText = "Bet is too much!";
+            } else {
+                document.getElementById("bet-message").innerText = "";
+            }
+        });
+
         function getCard() {
             return Math.floor(Math.random() * 11) + 1;
         }
+
+        document.getElementById("new-game-btn").addEventListener("click", function() {
+            if (betAmount <= 0) {
+                document.getElementById("bet-message").innerText = "Bet must be above 0!";
+                return;
+            }
+            if (betAmount > money) {
+                document.getElementById("bet-message").innerText = "Bet is too much!";
+                return;
+            }
+
+            playerHand = getCard() + getCard();
+            dealerHand = getCard() + getCard();
+            document.getElementById("player-hand").innerText = playerHand;
+            document.getElementById("dealer-hand").innerText = dealerHand;
+            document.getElementById("message").innerText = "Game Started!";
+            document.getElementById("hit-btn").disabled = false;
+            document.getElementById("stand-btn").disabled = false;
+        });
 
         document.getElementById("hit-btn").addEventListener("click", function() {
             playerHand += getCard();
             document.getElementById("player-hand").innerText = playerHand;
 
             if (playerHand > 21) {
-                document.getElementById("message").innerText = "You Bust! You lose $10.";
-                money -= 10;
+                document.getElementById("message").innerText = "You Bust! You lose your bet.";
+                money -= betAmount;
                 document.getElementById("money").innerText = money;
+                endGame();
             }
         });
 
         document.getElementById("stand-btn").addEventListener("click", function() {
-            dealerHand = getCard() + getCard();
+            while (dealerHand < 17) {
+                dealerHand += getCard();
+            }
             document.getElementById("dealer-hand").innerText = dealerHand;
 
             if (dealerHand > 21 || playerHand > dealerHand) {
-                document.getElementById("message").innerText = "You Win! You gain $20.";
-                money += 20;
+                document.getElementById("message").innerText = "You Win! You get double your bet!";
+                money += betAmount * 2;
+            } else if (playerHand < dealerHand) {
+                document.getElementById("message").innerText = "Dealer Wins! You lose your bet.";
+                money -= betAmount;
             } else {
-                document.getElementById("message").innerText = "Dealer Wins! You lose $10.";
-                money -= 10;
+                document.getElementById("message").innerText = "It's a tie! Bet is returned.";
             }
+
             document.getElementById("money").innerText = money;
+            endGame();
         });
 
+        function endGame() {
+            document.getElementById("hit-btn").disabled = true;
+            document.getElementById("stand-btn").disabled = true;
+        }
     </script>
 </body>
 </html>

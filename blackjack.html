@@ -5,94 +5,174 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blackjack</title>
     <style>
-        body {
-            background: repeating-linear-gradient(45deg, red, red 50px, green 50px, green 100px);
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            background: linear-gradient(45deg, darkred 25%, darkgreen 25%, darkgreen 50%, darkred 50%, darkred 75%, darkgreen 75%, darkgreen 100%);
+            background-size: 100px 100px;
             color: white;
-            text-align: center;
         }
-        #slots-arrow {
-            font-size: 24px;
-            text-decoration: none;
+        .game-container { max-width: 500px; margin: auto; background: black; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px white; }
+        button { padding: 10px 15px; font-size: 16px; cursor: pointer; margin: 10px; }
+        #bet-input { width: 80px; text-align: center; }
+        #dealer-cards, #player-cards { font-size: 24px; margin: 10px; }
+        #dealer-cards.hidden .card { visibility: hidden; }
+        #back-arrow {
             position: fixed;
             bottom: 20px;
             left: 20px;
+            font-size: 50px;
+            text-decoration: none;
+            color: white;
+            background: black;
+            padding: 10px 20px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px white;
+        }
+        #back-arrow:hover {
+            background: darkred;
+            box-shadow: 0 0 15px red;
+        }
+        #credits {
+            position: fixed;
+            bottom: 5px;
+            right: 10px;
+            font-size: 12px;
+            color: white;
         }
     </style>
 </head>
 <body>
+
     <h1>Blackjack</h1>
-    <p>Money: $<span id="money">100</span></p>
-    <button onclick="startGame()">New Game</button>
-    <button onclick="hit()">Hit</button>
-    <button onclick="stand()">Stand</button>
-    <br><br>
-    <a href="index.html" id="slots-arrow">⬅</a>
+    <p>Money: $<span id="money">0</span></p>
+
+    <div class="game-container">
+        <p>Bet Amount: <input type="number" id="bet-input" min="1"> <button id="start-game">New Game</button></p>
+        
+        <div id="dealer-section">
+            <h2>Dealer</h2>
+            <div id="dealer-cards" class="hidden"></div>
+        </div>
+
+        <div id="player-section">
+            <h2>Player</h2>
+            <div id="player-cards"></div>
+        </div>
+
+        <button id="hit-btn" disabled>Hit</button>
+        <button id="stand-btn" disabled>Stand</button>
+
+        <p id="message"></p>
+    </div>
+
+    <a href="index.html" id="back-arrow">←</a>
+    <p id="credits">Made by Nathan Wingard</p>
 
     <script>
         let money = localStorage.getItem("money") ? parseInt(localStorage.getItem("money")) : 100;
-        let playerHand = [];
-        let dealerHand = [];
-        let gameOver = false;
-
+        let blackjackUnlocked = localStorage.getItem("blackjackUnlocked") === "true";
+        
         document.getElementById("money").innerText = money;
 
-        function startGame() {
-            if (money < 10) {
-                alert("Not enough money!");
+        let deck, dealerHand, playerHand, bet;
+
+        function createDeck() {
+            let suits = ["♠", "♥", "♦", "♣"];
+            let values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
+            let deck = [];
+            for (let suit of suits) {
+                for (let value of values) {
+                    deck.push({ suit, value });
+                }
+            }
+            return deck.sort(() => Math.random() - 0.5);
+        }
+
+        function calculateHandValue(hand) {
+            let value = 0, aces = 0;
+            for (let card of hand) {
+                if (["J", "Q", "K"].includes(card.value)) value += 10;
+                else if (card.value === "A") { value += 11; aces++; }
+                else value += parseInt(card.value);
+            }
+            while (value > 21 && aces > 0) {
+                value -= 10;
+                aces--;
+            }
+            return value;
+        }
+
+        function updateCards() {
+            document.getElementById("dealer-cards").innerHTML = dealerHand.map(card => `<span class="card">${card.value}${card.suit}</span>`).join(" ");
+            document.getElementById("player-cards").innerHTML = playerHand.map(card => `<span class="card">${card.value}${card.suit}</span>`).join(" ");
+        }
+
+        document.getElementById("start-game").addEventListener("click", () => {
+            bet = parseInt(document.getElementById("bet-input").value);
+            if (bet < 1) {
+                document.getElementById("message").innerText = "Bet must be at least $1!";
+                return;
+            }
+            if (bet > money) {
+                document.getElementById("message").innerText = "Not enough money!";
                 return;
             }
 
-            playerHand = [drawCard(), drawCard()];
-            dealerHand = [drawCard(), drawCard()];
-            money -= 10;
+            money -= bet;
             localStorage.setItem("money", money);
             document.getElementById("money").innerText = money;
-            alert("Game started! Dealer has one hidden card.");
-        }
 
-        function drawCard() {
-            return Math.floor(Math.random() * 10) + 1;
-        }
+            deck = createDeck();
+            dealerHand = [deck.pop(), deck.pop()];
+            playerHand = [deck.pop(), deck.pop()];
+            
+            document.getElementById("dealer-cards").classList.add("hidden");
+            updateCards();
 
-        function hit() {
-            if (gameOver) return;
-            playerHand.push(drawCard());
-            if (getTotal(playerHand) > 21) {
-                gameOver = true;
-                alert("You busted! Dealer wins.");
-            }
-        }
+            document.getElementById("hit-btn").disabled = false;
+            document.getElementById("stand-btn").disabled = false;
+            document.getElementById("message").innerText = "";
+        });
 
-        function stand() {
-            if (gameOver) return;
+        document.getElementById("hit-btn").addEventListener("click", () => {
+            playerHand.push(deck.pop());
+            updateCards();
+            if (calculateHandValue(playerHand) > 21) endRound();
+        });
 
-            while (getTotal(dealerHand) < 17) {
-                dealerHand.push(drawCard());
-            }
+        document.getElementById("stand-btn").addEventListener("click", () => endRound());
 
-            let playerTotal = getTotal(playerHand);
-            let dealerTotal = getTotal(dealerHand);
+        function endRound() {
+            document.getElementById("dealer-cards").classList.remove("hidden");
 
-            let message = `Dealer's total: ${dealerTotal}\n`;
+            while (calculateHandValue(dealerHand) < 17) dealerHand.push(deck.pop());
 
-            if (dealerTotal > 21 || playerTotal > dealerTotal) {
-                money += 20;
-                message += "You win!";
-            } else if (playerTotal === dealerTotal) {
-                money += 10;
-                message += "It's a tie!";
-            } else {
-                message += "Dealer wins.";
-            }
+            let playerValue = calculateHandValue(playerHand);
+            let dealerValue = calculateHandValue(dealerHand);
+            let message = "";
 
-            gameOver = true;
+            if (playerValue > 21) message = "Bust! You lose.";
+            else if (dealerValue > 21 || playerValue > dealerValue) {
+                money += bet * 2;
+                message = "You win!";
+            } else if (playerValue === dealerValue) {
+                money += bet;
+                message = "It's a tie!";
+            } else message = "Dealer wins.";
+
             localStorage.setItem("money", money);
             document.getElementById("money").innerText = money;
-            alert(message);
+            document.getElementById("message").innerText = message;
+
+            document.getElementById("hit-btn").disabled = true;
+            document.getElementById("stand-btn").disabled = true;
         }
 
-        function getTotal(hand) {
-            return hand.reduce((a, b) => a + b, 0);
+        // Lock Blackjack Access Until Paid
+        if (!blackjackUnlocked) {
+            window.location.href = "index.html";
+            alert("You must pay $2,500 in the Slot Machine game to unlock Blackjack.");
         }
     </script>
 </body>

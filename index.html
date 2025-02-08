@@ -15,6 +15,8 @@
         .machine-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
         .machine { text-align: center; padding: 10px; border: 2px solid black; border-radius: 10px; background: white; }
         button { padding: 10px 20px; font-size: 16px; cursor: pointer; display: block; margin: 10px auto; }
+        
+        /* Blackjack Arrow (Paywall) */
         #blackjack-arrow {
             position: fixed;
             bottom: 20px;
@@ -26,22 +28,55 @@
             padding: 10px 20px;
             border-radius: 50%;
             box-shadow: 0 0 10px white;
-            display: none;
+            display: none; /* Hidden until unlocked */
         }
         #blackjack-arrow:hover {
             background: darkred;
             box-shadow: 0 0 15px red;
         }
-        #buy-blackjack-btn {
+        #buy-blackjack {
+            margin-top: 20px;
+        }
+
+        /* Settings Cog */
+        #settings-icon {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            font-size: 16px;
-            background: gold;
+            top: 15px;
+            right: 15px;
+            font-size: 30px;
+            cursor: pointer;
+            background: black;
+            color: white;
             padding: 10px;
-            border: none;
+            border-radius: 50%;
+            box-shadow: 0 0 10px white;
+        }
+        #settings-icon:hover {
+            background: darkred;
+            box-shadow: 0 0 15px red;
+        }
+
+        /* Settings Menu */
+        #settings-menu {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: black;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px white;
+            text-align: center;
+        }
+        #settings-menu button {
+            margin: 10px;
+            padding: 10px 15px;
+            font-size: 16px;
             cursor: pointer;
         }
+
         #credits {
             position: fixed;
             bottom: 5px;
@@ -69,10 +104,21 @@
 
     <button id="buy-machine-btn">Buy Slot Machine ($50)</button>
     <button id="buy-auto-spinner-btn">Buy Auto Spinner ($30)</button>
-    <button id="buy-blackjack-btn">Unlock Blackjack ($2500)</button>
     <p id="message"></p>
 
+    <button id="buy-blackjack">Unlock Blackjack ($2500)</button>
     <a href="blackjack.html" id="blackjack-arrow">→</a>
+
+    <!-- Settings Cog -->
+    <div id="settings-icon">⚙️</div>
+
+    <!-- Settings Menu -->
+    <div id="settings-menu">
+        <h3>Settings</h3>
+        <button id="reset-save">Reset Save</button>
+        <button id="close-settings">Close</button>
+    </div>
+
     <p id="credits">Made by Nathan Wingard</p>
 
     <script>
@@ -81,9 +127,9 @@
 
         document.getElementById("money").innerText = money;
 
-        if (blackjackUnlocked) {
-            document.getElementById("blackjack-arrow").style.display = "inline";
-            document.getElementById("buy-blackjack-btn").style.display = "none";
+        function updateMoney() {
+            document.getElementById("money").innerText = money;
+            localStorage.setItem("money", money);
         }
 
         document.getElementById("title").addEventListener("click", function() {
@@ -121,23 +167,40 @@
             updateMoney();
         });
 
-        document.getElementById("buy-blackjack-btn").addEventListener("click", function() {
+        document.getElementById("buy-blackjack").addEventListener("click", function() {
             if (money < 2500) {
-                document.getElementById("message").innerText = "Not enough money!";
+                alert("Not enough money to unlock Blackjack!");
                 return;
             }
             money -= 2500;
-            updateMoney();
             blackjackUnlocked = true;
-            localStorage.setItem("blackjackUnlocked", "true");
-            document.getElementById("blackjack-arrow").style.display = "inline";
-            document.getElementById("buy-blackjack-btn").style.display = "none";
+            updateMoney();
+            localStorage.setItem("blackjackUnlocked", true);
+            document.getElementById("blackjack-arrow").style.display = "block";
+            document.getElementById("buy-blackjack").style.display = "none";
         });
 
-        function updateMoney() {
-            document.getElementById("money").innerText = money;
-            localStorage.setItem("money", money);
+        if (blackjackUnlocked) {
+            document.getElementById("blackjack-arrow").style.display = "block";
+            document.getElementById("buy-blackjack").style.display = "none";
         }
+
+        document.getElementById("settings-icon").addEventListener("click", () => {
+            document.getElementById("settings-menu").style.display = "block";
+        });
+
+        document.getElementById("close-settings").addEventListener("click", () => {
+            document.getElementById("settings-menu").style.display = "none";
+        });
+
+        document.getElementById("reset-save").addEventListener("click", () => {
+            if (confirm("Are you sure you want to reset your save? This cannot be undone!")) {
+                localStorage.removeItem("money");
+                localStorage.removeItem("blackjackUnlocked");
+                alert("Save reset! Reloading page...");
+                location.reload();
+            }
+        });
     </script>
 </body>
 </html>

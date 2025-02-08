@@ -5,30 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Slot Machine Game</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background: repeating-conic-gradient(
-                #8B0000 0% 25%, /* Dark Red */
-                #165016 25% 50%, /* Dark Green */
-                #8B0000 50% 75%,
-                #165016 75% 100%
-            );
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            background: linear-gradient(45deg, darkred 25%, darkgreen 25%, darkgreen 50%, darkred 50%, darkred 75%, darkgreen 75%, darkgreen 100%);
             background-size: 100px 100px;
-            position: relative;
-            min-height: 100vh;
         }
         .slot { font-size: 50px; margin: 10px; }
         .machine-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
         .machine { text-align: center; padding: 10px; border: 2px solid black; border-radius: 10px; background: white; }
         button { padding: 10px 20px; font-size: 16px; cursor: pointer; display: block; margin: 10px auto; }
-        .footer {
+        #blackjack-arrow {
             position: fixed;
-            bottom: 10px;
+            bottom: 20px;
+            right: 20px;
+            font-size: 50px;
+            text-decoration: none;
+            color: white;
+            background: black;
+            padding: 10px 20px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px white;
+        }
+        #blackjack-arrow:hover {
+            background: darkred;
+            box-shadow: 0 0 15px red;
+        }
+        #credits {
+            position: fixed;
+            bottom: 5px;
             right: 10px;
             font-size: 12px;
             color: white;
-            opacity: 0.7;
         }
     </style>
 </head>
@@ -52,28 +60,46 @@
     <button id="buy-auto-spinner-btn">Buy Auto Spinner ($30)</button>
     <p id="message"></p>
 
-    <div class="footer">Made by Nathan Wingard</div>
+    <a href="blackjack.html" id="blackjack-arrow">→</a>
+    <p id="credits">Made by Nathan Wingard</p>
 
     <script>
         let money = 100;
+        document.getElementById("money").innerText = money;
+
         document.getElementById("title").addEventListener("click", function() {
             money += 100;
-            document.getElementById("money").textContent = money;
+            document.getElementById("money").innerText = money;
         });
 
         document.querySelector(".spin-btn").addEventListener("click", function() {
-            if (money >= 10) {
-                money -= 10;
-                document.getElementById("money").textContent = money;
-                let slots = document.querySelectorAll(".slot");
-                let symbols = ["🍒", "🍋", "🍉", "⭐", "🔔"];
-                let results = [symbols[Math.floor(Math.random() * symbols.length)], 
-                               symbols[Math.floor(Math.random() * symbols.length)], 
-                               symbols[Math.floor(Math.random() * symbols.length)]];
-                slots.forEach((slot, i) => slot.textContent = results[i]);
-            } else {
-                document.getElementById("message").textContent = "Not enough money!";
+            if (money < 10) {
+                document.getElementById("message").innerText = "Not enough money!";
+                return;
             }
+
+            money -= 10;
+            document.getElementById("money").innerText = money;
+
+            let slots = document.querySelectorAll(".slot");
+            let symbols = ["🍒", "🍋", "🔔", "⭐", "7️⃣"];
+            let result = [];
+
+            slots.forEach(slot => {
+                let symbol = symbols[Math.floor(Math.random() * symbols.length)];
+                slot.innerText = symbol;
+                result.push(symbol);
+            });
+
+            if (result[0] === result[1] && result[1] === result[2]) {
+                let winnings = Math.floor(Math.random() * 5 + 1) * (money * 0.2);
+                money += winnings;
+                document.getElementById("message").innerText = "You won $" + winnings + "!";
+            } else {
+                document.getElementById("message").innerText = "Try again!";
+            }
+
+            document.getElementById("money").innerText = money;
         });
     </script>
 </body>

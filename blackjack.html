@@ -36,7 +36,6 @@
             padding: 10px 20px;
             border-radius: 50%;
             box-shadow: 0 0 10px white;
-            transform: rotate(180deg);
         }
         #slots-arrow:hover {
             background: darkgreen;
@@ -73,7 +72,7 @@
 
     <div id="game-container">
         <p>Your Hand: <span id="player-hand">0</span></p>
-        <p>Dealer's Hand: <span id="dealer-hand">0</span></p>
+        <p>Dealer's Hand: <span id="dealer-hand">?</span></p>
         <button id="hit-btn" disabled>Hit</button>
         <button id="stand-btn" disabled>Stand</button>
         <p id="message"></p>
@@ -86,6 +85,7 @@
         let money = 100;
         let playerHand = 0;
         let dealerHand = 0;
+        let dealerFirstCard = 0;
         let betAmount = 10;
 
         document.getElementById("money").innerText = money;
@@ -117,9 +117,11 @@
             }
 
             playerHand = getCard() + getCard();
-            dealerHand = getCard() + getCard();
+            dealerFirstCard = getCard();
+            dealerHand = dealerFirstCard + getCard();
+
             document.getElementById("player-hand").innerText = playerHand;
-            document.getElementById("dealer-hand").innerText = dealerHand;
+            document.getElementById("dealer-hand").innerText = dealerFirstCard + " + ?";
             document.getElementById("message").innerText = "Game Started!";
             document.getElementById("hit-btn").disabled = false;
             document.getElementById("stand-btn").disabled = false;
@@ -138,6 +140,8 @@
         });
 
         document.getElementById("stand-btn").addEventListener("click", function() {
+            document.getElementById("dealer-hand").innerText = dealerHand; // Reveal full hand
+
             while (dealerHand < 17) {
                 dealerHand += getCard();
             }

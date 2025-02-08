@@ -3,77 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Slot Machine</title>
+    <title>Slot Machine Game</title>
     <style>
-        body {
-            background: repeating-linear-gradient(45deg, red, red 50px, green 50px, green 100px);
-            color: white;
-            text-align: center;
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            background: linear-gradient(45deg, darkred 25%, darkgreen 25%, darkgreen 50%, darkred 50%, darkred 75%, darkgreen 75%, darkgreen 100%);
+            background-size: 100px 100px;
         }
+        .slot { font-size: 50px; margin: 10px; }
+        .machine-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+        .machine { text-align: center; padding: 10px; border: 2px solid black; border-radius: 10px; background: white; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; display: block; margin: 10px auto; }
         #blackjack-arrow {
-            display: none;
-            font-size: 24px;
-            text-decoration: none;
             position: fixed;
             bottom: 20px;
             right: 20px;
+            font-size: 50px;
+            text-decoration: none;
+            color: white;
+            background: black;
+            padding: 10px 20px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px white;
         }
-        #unlock-blackjack-btn {
-            margin-top: 20px;
-            padding: 10px;
-            font-size: 16px;
+        #blackjack-arrow:hover {
+            background: darkred;
+            box-shadow: 0 0 15px red;
+        }
+        #credits {
+            position: fixed;
+            bottom: 5px;
+            right: 10px;
+            font-size: 12px;
+            color: white;
         }
     </style>
 </head>
 <body>
-    <h1>Slot Machine</h1>
+
+    <h1 id="title">Slot Machine Game</h1>
     <p>Money: $<span id="money">100</span></p>
-    <button onclick="playSlots()">Spin</button>
-    <button id="unlock-blackjack-btn">Unlock Blackjack ($2,500)</button>
-    <br><br>
-    <a href="blackjack.html" id="blackjack-arrow">➡</a>
+
+    <div id="machines" class="machine-container">
+        <div class="machine">
+            <div class="slots">
+                <span class="slot">❓</span>
+                <span class="slot">❓</span>
+                <span class="slot">❓</span>
+            </div>
+            <button class="spin-btn">Spin ($10)</button>
+        </div>
+    </div>
+
+    <button id="buy-machine-btn">Buy Slot Machine ($50)</button>
+    <button id="buy-auto-spinner-btn">Buy Auto Spinner ($30)</button>
+    <p id="message"></p>
+
+    <a href="blackjack.html" id="blackjack-arrow">→</a>
+    <p id="credits">Made by Nathan Wingard</p>
 
     <script>
-        let money = localStorage.getItem("money") ? parseInt(localStorage.getItem("money")) : 100;
-        let blackjackUnlocked = localStorage.getItem("blackjackUnlocked") === "true";
-
+        let money = 100;
         document.getElementById("money").innerText = money;
-        document.getElementById("blackjack-arrow").style.display = blackjackUnlocked ? "block" : "none";
 
-        function playSlots() {
-            let bet = 10;
-            if (money < bet) {
-                alert("Not enough money!");
+        document.getElementById("title").addEventListener("click", function() {
+            money += 100;
+            document.getElementById("money").innerText = money;
+        });
+
+        document.querySelector(".spin-btn").addEventListener("click", function() {
+            if (money < 10) {
+                document.getElementById("message").innerText = "Not enough money!";
                 return;
             }
 
-            let result = Math.random();
-            if (result > 0.5) {
-                money += bet * 2;
-            } else {
-                money -= bet;
-            }
-
-            localStorage.setItem("money", money);
+            money -= 10;
             document.getElementById("money").innerText = money;
-        }
 
-        document.getElementById("unlock-blackjack-btn").addEventListener("click", function() {
-            if (money >= 2500) {
-                money -= 2500;
-                localStorage.setItem("money", money);
-                localStorage.setItem("blackjackUnlocked", "true");
-                document.getElementById("blackjack-arrow").style.display = "block";
-                document.getElementById("unlock-blackjack-btn").style.display = "none";
-                document.getElementById("money").innerText = money;
+            let slots = document.querySelectorAll(".slot");
+            let symbols = ["🍒", "🍋", "🔔", "⭐", "7️⃣"];
+            let result = [];
+
+            slots.forEach(slot => {
+                let symbol = symbols[Math.floor(Math.random() * symbols.length)];
+                slot.innerText = symbol;
+                result.push(symbol);
+            });
+
+            if (result[0] === result[1] && result[1] === result[2]) {
+                let winnings = Math.floor(Math.random() * 5 + 1) * (money * 0.2);
+                money += winnings;
+                document.getElementById("message").innerText = "You won $" + winnings + "!";
             } else {
-                alert("Not enough money!");
+                document.getElementById("message").innerText = "Try again!";
             }
-        });
 
-        if (blackjackUnlocked) {
-            document.getElementById("unlock-blackjack-btn").style.display = "none";
-        }
+            document.getElementById("money").innerText = money;
+        });
     </script>
 </body>
 </html>

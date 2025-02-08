@@ -26,10 +26,21 @@
             padding: 10px 20px;
             border-radius: 50%;
             box-shadow: 0 0 10px white;
+            display: none;
         }
         #blackjack-arrow:hover {
             background: darkred;
             box-shadow: 0 0 15px red;
+        }
+        #buy-blackjack-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 16px;
+            background: gold;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
         }
         #credits {
             position: fixed;
@@ -58,18 +69,26 @@
 
     <button id="buy-machine-btn">Buy Slot Machine ($50)</button>
     <button id="buy-auto-spinner-btn">Buy Auto Spinner ($30)</button>
+    <button id="buy-blackjack-btn">Unlock Blackjack ($2500)</button>
     <p id="message"></p>
 
     <a href="blackjack.html" id="blackjack-arrow">→</a>
     <p id="credits">Made by Nathan Wingard</p>
 
     <script>
-        let money = 100;
+        let money = localStorage.getItem("money") ? parseInt(localStorage.getItem("money")) : 100;
+        let blackjackUnlocked = localStorage.getItem("blackjackUnlocked") === "true";
+
         document.getElementById("money").innerText = money;
+
+        if (blackjackUnlocked) {
+            document.getElementById("blackjack-arrow").style.display = "inline";
+            document.getElementById("buy-blackjack-btn").style.display = "none";
+        }
 
         document.getElementById("title").addEventListener("click", function() {
             money += 100;
-            document.getElementById("money").innerText = money;
+            updateMoney();
         });
 
         document.querySelector(".spin-btn").addEventListener("click", function() {
@@ -79,7 +98,7 @@
             }
 
             money -= 10;
-            document.getElementById("money").innerText = money;
+            updateMoney();
 
             let slots = document.querySelectorAll(".slot");
             let symbols = ["🍒", "🍋", "🔔", "⭐", "7️⃣"];
@@ -99,8 +118,26 @@
                 document.getElementById("message").innerText = "Try again!";
             }
 
-            document.getElementById("money").innerText = money;
+            updateMoney();
         });
+
+        document.getElementById("buy-blackjack-btn").addEventListener("click", function() {
+            if (money < 2500) {
+                document.getElementById("message").innerText = "Not enough money!";
+                return;
+            }
+            money -= 2500;
+            updateMoney();
+            blackjackUnlocked = true;
+            localStorage.setItem("blackjackUnlocked", "true");
+            document.getElementById("blackjack-arrow").style.display = "inline";
+            document.getElementById("buy-blackjack-btn").style.display = "none";
+        });
+
+        function updateMoney() {
+            document.getElementById("money").innerText = money;
+            localStorage.setItem("money", money);
+        }
     </script>
 </body>
 </html>

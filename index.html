@@ -1,150 +1,122 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Casino</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; background: black; color: white; }
-        .slot { font-size: 50px; margin: 10px; }
-        .machine-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
-        .machine { text-align: center; padding: 10px; border: 2px solid white; border-radius: 10px; background: gray; }
-        button { padding: 10px 20px; font-size: 16px; cursor: pointer; display: block; margin: 10px auto; }
-    </style>
-</head>
-<body>
+<script>
+    let money = localStorage.getItem("money") ? parseInt(localStorage.getItem("money")) : 100;
+    let blackjackUnlocked = localStorage.getItem("blackjackUnlocked") === "true";
+    let autoSpinnerActive = localStorage.getItem("autoSpinner") === "true";
 
-    <h1 id="title" contenteditable="true">My Casino</h1>
-    <p>Money: $<span id="money">100</span></p>
+    document.getElementById("money").innerText = money;
 
-    <div id="machines" class="machine-container">
-        <!-- Default Machine -->
-        <div class="machine">
+    if (blackjackUnlocked) {
+        document.getElementById("blackjack-arrow").style.display = "block";
+    }
+
+    function createSlotMachine() {
+        let machine = document.createElement("div");
+        machine.className = "machine";
+        machine.innerHTML = `
             <div class="slots">
                 <span class="slot">❓</span>
                 <span class="slot">❓</span>
                 <span class="slot">❓</span>
             </div>
             <button class="spin-btn">Spin ($10)</button>
-        </div>
-    </div>
+        `;
 
-    <button id="buy-machine-btn">Buy Slot Machine ($50)</button>
-    <button id="buy-auto-spinner-btn">Buy Auto Spinner ($30)</button>
+        document.getElementById("machines").appendChild(machine);
+        machine.querySelector(".spin-btn").addEventListener("click", () => spinMachine(machine));
+    }
 
-    <p id="message"></p>
+    function spinMachine(machine) {
+        if (money < 10) {
+            document.getElementById("message").innerText = "Not enough money!";
+            return;
+        }
 
-    <script>
-        let money = localStorage.getItem("money") ? parseInt(localStorage.getItem("money")) : 100;
-        let autoSpinEnabled = localStorage.getItem("autoSpin") === "true";
-        
+        money -= 10;
+        updateMoney();
+
+        let slots = machine.querySelectorAll(".slot");
+        let symbols = ["🍒", "🍋", "🔔", "⭐", "7️⃣"];
+        let result = [];
+
+        let forceWin = Math.random() < 0.5; // 50% win rate
+
+        if (forceWin) {
+            let winSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+            slots.forEach(slot => slot.innerText = winSymbol);
+            result = [winSymbol, winSymbol, winSymbol];
+        } else {
+            slots.forEach(slot => {
+                let symbol = symbols[Math.floor(Math.random() * symbols.length)];
+                slot.innerText = symbol;
+                result.push(symbol);
+            });
+        }
+
+        if (result[0] === result[1] && result[1] === result[2]) {
+            let winnings = 50;
+            money += winnings;
+            document.getElementById("message").innerText = "You won $" + winnings + "!";
+        } else {
+            document.getElementById("message").innerText = "Try again!";
+        }
+
+        updateMoney();
+    }
+
+    document.getElementById("buy-machine-btn").addEventListener("click", function () {
+        if (money >= 50) {
+            money -= 50;
+            updateMoney();
+            createSlotMachine();
+            document.getElementById("message").innerText = "Bought a new slot machine!";
+        } else {
+            document.getElementById("message").innerText = "Not enough money!";
+        }
+    });
+
+    document.getElementById("buy-auto-spinner-btn").addEventListener("click", function () {
+        if (money >= 30) {
+            money -= 30;
+            updateMoney();
+            autoSpinnerActive = true;
+            localStorage.setItem("autoSpinner", "true");
+            document.getElementById("message").innerText = "Bought an auto spinner!";
+        } else {
+            document.getElementById("message").innerText = "Not enough money!";
+        }
+    });
+
+    document.getElementById("unlock-blackjack-btn").addEventListener("click", function () {
+        if (money >= 2500) {
+            money -= 2500;
+            updateMoney();
+            blackjackUnlocked = true;
+            localStorage.setItem("blackjackUnlocked", "true");
+            document.getElementById("blackjack-arrow").style.display = "block";
+            document.getElementById("message").innerText = "Blackjack Unlocked!";
+        } else {
+            document.getElementById("message").innerText = "Not enough money!";
+        }
+    });
+
+    function updateMoney() {
         document.getElementById("money").innerText = money;
+        localStorage.setItem("money", money);
+    }
 
-        function updateMoney() {
-            document.getElementById("money").innerText = money;
-            localStorage.setItem("money", money);
-        }
+    document.getElementById("settings-icon").addEventListener("click", function () {
+        let menu = document.getElementById("settings-menu");
+        menu.style.display = (menu.style.display === "block") ? "none" : "block";
+    });
 
-        function createSlotMachine() {
-            let machine = document.createElement("div");
-            machine.classList.add("machine");
+    document.getElementById("reset-save").addEventListener("click", function () {
+        localStorage.clear();
+        location.reload();
+    });
 
-            let slotsDiv = document.createElement("div");
-            slotsDiv.classList.add("slots");
-
-            let slots = ["❓", "❓", "❓"].map(symbol => {
-                let span = document.createElement("span");
-                span.classList.add("slot");
-                span.innerText = symbol;
-                return span;
-            });
-
-            slots.forEach(span => slotsDiv.appendChild(span));
-
-            let spinButton = document.createElement("button");
-            spinButton.classList.add("spin-btn");
-            spinButton.innerText = "Spin ($10)";
-            spinButton.addEventListener("click", function() {
-                spinSlots(slots);
-            });
-
-            machine.appendChild(slotsDiv);
-            machine.appendChild(spinButton);
-            document.getElementById("machines").appendChild(machine);
-        }
-
-        function spinSlots(slots) {
-            if (money < 10) {
-                document.getElementById("message").innerText = "Not enough money!";
-                return;
-            }
-
-            money -= 10;
-            updateMoney();
-
-            let symbols = ["🍒", "🍋", "🔔", "⭐", "7️⃣"];
-            let result = [];
-
-            let forceWin = Math.random() < 0.5; // 50% win rate
-
-            if (forceWin) {
-                let winSymbol = symbols[Math.floor(Math.random() * symbols.length)];
-                slots.forEach(slot => slot.innerText = winSymbol);
-                result = [winSymbol, winSymbol, winSymbol];
-            } else {
-                slots.forEach(slot => {
-                    let symbol = symbols[Math.floor(Math.random() * symbols.length)];
-                    slot.innerText = symbol;
-                    result.push(symbol);
-                });
-            }
-
-            if (result[0] === result[1] && result[1] === result[2]) {
-                let winnings = 50;
-                money += winnings;
-                document.getElementById("message").innerText = "You won $" + winnings + "!";
-            } else {
-                document.getElementById("message").innerText = "Try again!";
-            }
-
-            updateMoney();
-        }
-
-        document.getElementById("buy-machine-btn").addEventListener("click", function() {
-            if (money >= 50) {
-                money -= 50;
-                updateMoney();
-                createSlotMachine();
-                document.getElementById("message").innerText = "Bought a new slot machine!";
-            } else {
-                document.getElementById("message").innerText = "Not enough money!";
-            }
-        });
-
-        document.getElementById("buy-auto-spinner-btn").addEventListener("click", function() {
-            if (money >= 30) {
-                money -= 30;
-                updateMoney();
-                autoSpinEnabled = true;
-                localStorage.setItem("autoSpin", "true");
-                document.getElementById("message").innerText = "Auto Spinner activated!";
-                startAutoSpin();
-            } else {
-                document.getElementById("message").innerText = "Not enough money!";
-            }
-        });
-
-        function startAutoSpin() {
-            setInterval(() => {
-                let firstMachine = document.querySelector(".machine .spin-btn");
-                if (firstMachine) firstMachine.click();
-            }, 3000);
-        }
-
-        if (autoSpinEnabled) {
-            startAutoSpin();
-        }
-    </script>
-
-</body>
-</html>
+    if (autoSpinnerActive) {
+        setInterval(() => {
+            document.querySelectorAll(".machine").forEach(machine => spinMachine(machine));
+        }, 3000);
+    }
+</script>

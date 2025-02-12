@@ -10,11 +10,10 @@
             text-align: center; 
             background: linear-gradient(45deg, darkred 25%, darkgreen 25%, darkgreen 50%, darkred 50%, darkred 75%, darkgreen 75%, darkgreen 100%);
             background-size: 100px 100px;
-            color: white;
         }
         .slot { font-size: 50px; margin: 10px; }
         .machine-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
-        .machine { text-align: center; padding: 10px; border: 2px solid black; border-radius: 10px; background: white; color: black; }
+        .machine { text-align: center; padding: 10px; border: 2px solid black; border-radius: 10px; background: white; }
         button { padding: 10px 20px; font-size: 16px; cursor: pointer; display: block; margin: 10px auto; }
         #blackjack-arrow {
             position: fixed;
@@ -27,11 +26,32 @@
             padding: 10px 20px;
             border-radius: 50%;
             box-shadow: 0 0 10px white;
-            display: none; /* Hidden until unlocked */
+            display: none;
         }
         #blackjack-arrow:hover {
             background: darkred;
             box-shadow: 0 0 15px red;
+        }
+        #settings-icon {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            font-size: 30px;
+            cursor: pointer;
+            background: white;
+            border-radius: 50%;
+            padding: 10px;
+            box-shadow: 0 0 10px gray;
+        }
+        #settings-menu {
+            display: none;
+            position: fixed;
+            top: 50px;
+            right: 10px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px black;
         }
         #credits {
             position: fixed;
@@ -40,28 +60,11 @@
             font-size: 12px;
             color: white;
         }
-        #settings-icon {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            font-size: 30px;
-            cursor: pointer;
-        }
-        #settings-menu {
-            display: none;
-            position: fixed;
-            top: 50px;
-            right: 10px;
-            background: black;
-            padding: 10px;
-            border: 2px solid white;
-            color: white;
-        }
     </style>
 </head>
 <body>
 
-    <h1 id="title">My Casino</h1>
+    <h1 id="title" contenteditable="true">My Casino</h1>
     <p>Money: $<span id="money">100</span></p>
 
     <div id="machines" class="machine-container">
@@ -77,30 +80,28 @@
 
     <button id="buy-machine-btn">Buy Slot Machine ($50)</button>
     <button id="buy-auto-spinner-btn">Buy Auto Spinner ($30)</button>
-    <button id="unlock-blackjack-btn">Unlock Blackjack ($2,500)</button>
+    <button id="unlock-blackjack-btn">Unlock Blackjack ($2500)</button>
+    
     <p id="message"></p>
-
+    
     <a href="blackjack.html" id="blackjack-arrow">→</a>
-    <p id="credits">Made by Nathan Wingard</p>
 
-    <span id="settings-icon">⚙️</span>
+    <div id="settings-icon">⚙</div>
     <div id="settings-menu">
         <button id="reset-save">Reset Save</button>
     </div>
 
+    <p id="credits">Made by Nathan Wingard</p>
+
     <script>
-        let money = parseInt(localStorage.getItem("money")) || 100;
+        let money = localStorage.getItem("money") ? parseInt(localStorage.getItem("money")) : 100;
         let blackjackUnlocked = localStorage.getItem("blackjackUnlocked") === "true";
 
         document.getElementById("money").innerText = money;
+
         if (blackjackUnlocked) {
             document.getElementById("blackjack-arrow").style.display = "block";
         }
-
-        document.getElementById("title").addEventListener("click", function() {
-            money += 100;
-            updateMoney();
-        });
 
         document.querySelector(".spin-btn").addEventListener("click", function() {
             if (money < 10) {
@@ -115,11 +116,19 @@
             let symbols = ["🍒", "🍋", "🔔", "⭐", "7️⃣"];
             let result = [];
 
-            slots.forEach(slot => {
-                let symbol = symbols[Math.floor(Math.random() * symbols.length)];
-                slot.innerText = symbol;
-                result.push(symbol);
-            });
+            let forceWin = Math.random() < 0.5; // 50% win rate
+
+            if (forceWin) {
+                let winSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+                slots.forEach(slot => slot.innerText = winSymbol);
+                result = [winSymbol, winSymbol, winSymbol];
+            } else {
+                slots.forEach(slot => {
+                    let symbol = symbols[Math.floor(Math.random() * symbols.length)];
+                    slot.innerText = symbol;
+                    result.push(symbol);
+                });
+            }
 
             if (result[0] === result[1] && result[1] === result[2]) {
                 let winnings = 50;
@@ -132,17 +141,37 @@
             updateMoney();
         });
 
-        document.getElementById("unlock-blackjack-btn").addEventListener("click", function() {
-            if (money < 2500) {
+        document.getElementById("buy-machine-btn").addEventListener("click", function() {
+            if (money >= 50) {
+                money -= 50;
+                updateMoney();
+                document.getElementById("message").innerText = "Bought a new slot machine!";
+            } else {
                 document.getElementById("message").innerText = "Not enough money!";
-                return;
             }
+        });
 
-            money -= 2500;
-            updateMoney();
-            blackjackUnlocked = true;
-            localStorage.setItem("blackjackUnlocked", "true");
-            document.getElementById("blackjack-arrow").style.display = "block";
+        document.getElementById("buy-auto-spinner-btn").addEventListener("click", function() {
+            if (money >= 30) {
+                money -= 30;
+                updateMoney();
+                document.getElementById("message").innerText = "Bought an auto spinner!";
+            } else {
+                document.getElementById("message").innerText = "Not enough money!";
+            }
+        });
+
+        document.getElementById("unlock-blackjack-btn").addEventListener("click", function() {
+            if (money >= 2500) {
+                money -= 2500;
+                updateMoney();
+                blackjackUnlocked = true;
+                localStorage.setItem("blackjackUnlocked", "true");
+                document.getElementById("blackjack-arrow").style.display = "block";
+                document.getElementById("message").innerText = "Blackjack Unlocked!";
+            } else {
+                document.getElementById("message").innerText = "Not enough money!";
+            }
         });
 
         function updateMoney() {
@@ -152,13 +181,14 @@
 
         document.getElementById("settings-icon").addEventListener("click", function() {
             let menu = document.getElementById("settings-menu");
-            menu.style.display = menu.style.display === "block" ? "none" : "block";
+            menu.style.display = (menu.style.display === "block") ? "none" : "block";
         });
 
         document.getElementById("reset-save").addEventListener("click", function() {
             localStorage.clear();
             location.reload();
         });
+
     </script>
 </body>
 </html>

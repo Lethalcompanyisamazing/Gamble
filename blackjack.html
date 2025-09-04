@@ -1,179 +1,211 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blackjack</title>
-    <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            text-align: center; 
-            background: linear-gradient(45deg, darkred 25%, darkgreen 25%, darkgreen 50%, darkred 50%, darkred 75%, darkgreen 75%, darkgreen 100%);
-            background-size: 100px 100px;
-            color: white;
-        }
-        .game-container { max-width: 500px; margin: auto; background: black; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px white; }
-        button { padding: 10px 15px; font-size: 16px; cursor: pointer; margin: 10px; }
-        #bet-input { width: 80px; text-align: center; }
-        #dealer-cards, #player-cards { font-size: 24px; margin: 10px; }
-        #dealer-cards.hidden .card { visibility: hidden; }
-        #back-arrow {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            font-size: 50px;
-            text-decoration: none;
-            color: white;
-            background: black;
-            padding: 10px 20px;
-            border-radius: 50%;
-            box-shadow: 0 0 10px white;
-        }
-        #back-arrow:hover {
-            background: darkred;
-            box-shadow: 0 0 15px red;
-        }
-        #credits {
-            position: fixed;
-            bottom: 5px;
-            right: 10px;
-            font-size: 12px;
-            color: white;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blackjack</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      text-align: center; 
+      background: linear-gradient(45deg, darkred 25%, darkgreen 25%, darkgreen 50%, darkred 50%, darkred 75%, darkgreen 75%, darkgreen 100%);
+      background-size: 100px 100px;
+      color: white;
+    }
+    .game-container { 
+      max-width: 600px; 
+      margin: auto; 
+      background: black; 
+      padding: 20px; 
+      border-radius: 10px; 
+      box-shadow: 0 0 15px white; 
+    }
+    button { 
+      padding: 10px 20px; 
+      font-size: 16px; 
+      cursor: pointer; 
+      margin: 10px; 
+      border-radius: 6px;
+    }
+    #bet-input { width: 100px; text-align: center; font-size: 16px; }
+    #dealer-cards, #player-cards { 
+      font-size: 32px; 
+      margin: 15px; 
+      letter-spacing: 6px;
+    }
+    .hidden-card { 
+      display: inline-block; 
+      width: 30px; 
+      height: 45px; 
+      background: gray; 
+      border-radius: 4px;
+    }
+    #back-arrow {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      font-size: 40px;
+      text-decoration: none;
+      color: white;
+      background: black;
+      padding: 10px 20px;
+      border-radius: 50%;
+      box-shadow: 0 0 10px white;
+    }
+    #back-arrow:hover {
+      background: darkred;
+      box-shadow: 0 0 15px red;
+    }
+    #credits {
+      position: fixed;
+      bottom: 5px;
+      right: 10px;
+      font-size: 12px;
+      color: white;
+    }
+  </style>
 </head>
 <body>
 
-    <h1>Blackjack</h1>
-    <p>Money: $<span id="money">0</span></p>
+  <h1>Blackjack</h1>
+  <p>Money: $<span id="money">0</span></p>
 
-    <div class="game-container">
-        <p>Bet Amount: <input type="number" id="bet-input" min="1"> <button id="start-game">New Game</button></p>
-        
-        <div id="dealer-section">
-            <h2>Dealer</h2>
-            <div id="dealer-cards" class="hidden"></div>
-        </div>
-
-        <div id="player-section">
-            <h2>Player</h2>
-            <div id="player-cards"></div>
-        </div>
-
-        <button id="hit-btn" disabled>Hit</button>
-        <button id="stand-btn" disabled>Stand</button>
-
-        <p id="message"></p>
+  <div class="game-container">
+    <p>Bet Amount: <input type="number" id="bet-input" min="1" value="50"> 
+    <button id="start-game">New Game</button></p>
+    
+    <div id="dealer-section">
+      <h2>Dealer</h2>
+      <div id="dealer-cards"></div>
     </div>
 
-    <a href="index.html" id="back-arrow">←</a>
-    <p id="credits">Made by Nathan Wingard</p>
+    <div id="player-section">
+      <h2>You</h2>
+      <div id="player-cards"></div>
+    </div>
 
-    <script>
-        let money = localStorage.getItem("money") ? parseInt(localStorage.getItem("money")) : 100;
-        let blackjackUnlocked = localStorage.getItem("blackjackUnlocked") === "true";
-        
-        document.getElementById("money").innerText = money;
+    <button id="hit-btn" disabled>Hit</button>
+    <button id="stand-btn" disabled>Stand</button>
 
-        let deck, dealerHand, playerHand, bet;
+    <p id="message"></p>
+  </div>
 
-        function createDeck() {
-            let suits = ["♠", "♥", "♦", "♣"];
-            let values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
-            let deck = [];
-            for (let suit of suits) {
-                for (let value of values) {
-                    deck.push({ suit, value });
-                }
-            }
-            return deck.sort(() => Math.random() - 0.5);
+  <a href="index.html" id="back-arrow">←</a>
+  <p id="credits">Made by Nathan Wingard</p>
+
+  <script>
+    let money = localStorage.getItem("money") ? parseInt(localStorage.getItem("money")) : 200;
+    let blackjackUnlocked = localStorage.getItem("blackjackUnlocked") === "true";
+    document.getElementById("money").innerText = money;
+
+    let deck, dealerHand, playerHand, bet, gameActive = false;
+
+    function createDeck() {
+      let suits = ["♠", "♥", "♦", "♣"];
+      let values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
+      let deck = [];
+      for (let suit of suits) {
+        for (let value of values) {
+          deck.push({ suit, value });
         }
+      }
+      return deck.sort(() => Math.random() - 0.5);
+    }
 
-        function calculateHandValue(hand) {
-            let value = 0, aces = 0;
-            for (let card of hand) {
-                if (["J", "Q", "K"].includes(card.value)) value += 10;
-                else if (card.value === "A") { value += 11; aces++; }
-                else value += parseInt(card.value);
-            }
-            while (value > 21 && aces > 0) {
-                value -= 10;
-                aces--;
-            }
-            return value;
+    function calculateHandValue(hand) {
+      let value = 0, aces = 0;
+      for (let card of hand) {
+        if (["J", "Q", "K"].includes(card.value)) value += 10;
+        else if (card.value === "A") { value += 11; aces++; }
+        else value += parseInt(card.value);
+      }
+      while (value > 21 && aces > 0) {
+        value -= 10;
+        aces--;
+      }
+      return value;
+    }
+
+    function updateCards(revealDealer = false) {
+      let dealerHTML = "";
+      dealerHand.forEach((card, i) => {
+        if (i === 1 && !revealDealer) {
+          dealerHTML += `<span class="hidden-card"></span>`;
+        } else {
+          dealerHTML += `<span class="card">${card.value}${card.suit}</span>`;
         }
+      });
+      document.getElementById("dealer-cards").innerHTML = dealerHTML;
+      document.getElementById("player-cards").innerHTML = playerHand.map(c => `<span class="card">${c.value}${c.suit}</span>`).join(" ");
+    }
 
-        function updateCards() {
-            document.getElementById("dealer-cards").innerHTML = dealerHand.map(card => `<span class="card">${card.value}${card.suit}</span>`).join(" ");
-            document.getElementById("player-cards").innerHTML = playerHand.map(card => `<span class="card">${card.value}${card.suit}</span>`).join(" ");
-        }
+    document.getElementById("start-game").addEventListener("click", () => {
+      bet = parseInt(document.getElementById("bet-input").value);
+      if (bet < 1) { document.getElementById("message").innerText = "Bet must be at least $1!"; return; }
+      if (bet > money) { document.getElementById("message").innerText = "Not enough money!"; return; }
 
-        document.getElementById("start-game").addEventListener("click", () => {
-            bet = parseInt(document.getElementById("bet-input").value);
-            if (bet < 1) {
-                document.getElementById("message").innerText = "Bet must be at least $1!";
-                return;
-            }
-            if (bet > money) {
-                document.getElementById("message").innerText = "Not enough money!";
-                return;
-            }
+      money -= bet;
+      localStorage.setItem("money", money);
+      document.getElementById("money").innerText = money;
 
-            money -= bet;
-            localStorage.setItem("money", money);
-            document.getElementById("money").innerText = money;
+      deck = createDeck();
+      dealerHand = [deck.pop(), deck.pop()];
+      playerHand = [deck.pop(), deck.pop()];
 
-            deck = createDeck();
-            dealerHand = [deck.pop(), deck.pop()];
-            playerHand = [deck.pop(), deck.pop()];
-            
-            document.getElementById("dealer-cards").classList.add("hidden");
-            updateCards();
+      updateCards(false);
 
-            document.getElementById("hit-btn").disabled = false;
-            document.getElementById("stand-btn").disabled = false;
-            document.getElementById("message").innerText = "";
-        });
+      document.getElementById("hit-btn").disabled = false;
+      document.getElementById("stand-btn").disabled = false;
+      document.getElementById("message").innerText = "";
+      gameActive = true;
+    });
 
-        document.getElementById("hit-btn").addEventListener("click", () => {
-            playerHand.push(deck.pop());
-            updateCards();
-            if (calculateHandValue(playerHand) > 21) endRound();
-        });
+    document.getElementById("hit-btn").addEventListener("click", () => {
+      if (!gameActive) return;
+      playerHand.push(deck.pop());
+      updateCards(false);
+      if (calculateHandValue(playerHand) > 21) endRound();
+    });
 
-        document.getElementById("stand-btn").addEventListener("click", () => endRound());
+    document.getElementById("stand-btn").addEventListener("click", () => {
+      if (gameActive) endRound();
+    });
 
-        function endRound() {
-            document.getElementById("dealer-cards").classList.remove("hidden");
+    function endRound() {
+      gameActive = false;
+      updateCards(true);
 
-            while (calculateHandValue(dealerHand) < 17) dealerHand.push(deck.pop());
+      while (calculateHandValue(dealerHand) < 17) dealerHand.push(deck.pop());
 
-            let playerValue = calculateHandValue(playerHand);
-            let dealerValue = calculateHandValue(dealerHand);
-            let message = "";
+      let playerValue = calculateHandValue(playerHand);
+      let dealerValue = calculateHandValue(dealerHand);
+      let message = "";
 
-            if (playerValue > 21) message = "Bust! You lose.";
-            else if (dealerValue > 21 || playerValue > dealerValue) {
-                money += bet * 2;
-                message = "You win!";
-            } else if (playerValue === dealerValue) {
-                money += bet;
-                message = "It's a tie!";
-            } else message = "Dealer wins.";
+      if (playerValue > 21) {
+        message = "Bust! You lose.";
+      } else if (dealerValue > 21 || playerValue > dealerValue) {
+        money += bet * 2;
+        message = "🎉 You win!";
+      } else if (playerValue === dealerValue) {
+        money += bet;
+        message = "It's a tie!";
+      } else {
+        message = "Dealer wins.";
+      }
 
-            localStorage.setItem("money", money);
-            document.getElementById("money").innerText = money;
-            document.getElementById("message").innerText = message;
+      localStorage.setItem("money", money);
+      document.getElementById("money").innerText = money;
+      document.getElementById("message").innerText = message;
 
-            document.getElementById("hit-btn").disabled = true;
-            document.getElementById("stand-btn").disabled = true;
-        }
+      document.getElementById("hit-btn").disabled = true;
+      document.getElementById("stand-btn").disabled = true;
+    }
 
-        // Lock Blackjack Access Until Paid
-        if (!blackjackUnlocked) {
-            window.location.href = "index.html";
-            alert("You must pay $2,500 in the Slot Machine game to unlock Blackjack.");
-        }
-    </script>
+    // Unlock check
+    if (!blackjackUnlocked) {
+      alert("🚫 You must unlock Blackjack for $2,500 in the Slot Machine first.");
+      window.location.href = "index.html";
+    }
+  </script>
 </body>
 </html>
